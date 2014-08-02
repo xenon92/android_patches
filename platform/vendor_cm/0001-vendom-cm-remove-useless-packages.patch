@@ -1,0 +1,73 @@
+From e64a0aa2d1bfb7c8feb8fb1b10b6a87952d688ad Mon Sep 17 00:00:00 2001
+From: Shubhang Rathore <shubhang92@gmail.com>
+Date: Fri, 1 Aug 2014 23:46:06 +0530
+Subject: [PATCH] vendom/cm: remove useless packages
+
+Change-Id: I6ffc880bfc2a2dac8e24a74f931a6a8441213a40
+---
+ config/common.mk      |  6 ------
+ config/common_full.mk | 14 --------------
+ 2 files changed, 20 deletions(-)
+
+diff --git a/config/common.mk b/config/common.mk
+index 20138e1..5b51aed 100644
+--- a/config/common.mk
++++ b/config/common.mk
+@@ -132,23 +132,17 @@ PRODUCT_PACKAGES += \
+ 
+ # Optional CM packages
+ PRODUCT_PACKAGES += \
+-    VoicePlus \
+-    Basic \
+     libemoji
+ 
+ # Custom CM packages
+ PRODUCT_PACKAGES += \
+-    Launcher3 \
+     Trebuchet \
+     DSPManager \
+     libcyanogen-dsp \
+     audio_effects.conf \
+-    CMWallpapers \
+     Apollo \
+     CMFileManager \
+     LockClock \
+-    CMUpdater \
+-    CMFota \
+     CMAccount \
+     CMHome
+ 
+diff --git a/config/common_full.mk b/config/common_full.mk
+index e580b4c..2e0175f 100644
+--- a/config/common_full.mk
++++ b/config/common_full.mk
+@@ -12,26 +12,12 @@ PRODUCT_PACKAGE_OVERLAYS += vendor/cm/overlay/dictionaries
+ 
+ # Optional CM packages
+ PRODUCT_PACKAGES += \
+-    Galaxy4 \
+-    HoloSpiralWallpaper \
+-    LiveWallpapers \
+     LiveWallpapersPicker \
+-    MagicSmokeWallpapers \
+-    NoiseField \
+     PhaseBeam \
+-    VisualizationWallpapers \
+     PhotoTable \
+     SoundRecorder \
+     PhotoPhase
+ 
+-PRODUCT_PACKAGES += \
+-    VideoEditor \
+-    libvideoeditor_jni \
+-    libvideoeditor_core \
+-    libvideoeditor_osal \
+-    libvideoeditor_videofilters \
+-    libvideoeditorplayer
+-
+ # Extra tools in CM
+ PRODUCT_PACKAGES += \
+     vim
+-- 
+1.9.1
+
