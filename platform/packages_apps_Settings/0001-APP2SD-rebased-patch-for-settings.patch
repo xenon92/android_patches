@@ -5,31 +5,13 @@ Subject: [PATCH] APP2SD: rebased patch for settings
 
 Change-Id: Ieb91449fd0857477353a823c444aac8e98d3b31c
 ---
- res/values/cm_strings.xml                          |  9 +++
  .../settings/applications/InstalledAppDetails.java |  6 +-
  .../settings/applications/ManageApplications.java  | 79 +++++++++++++++++++---
  .../settings/deviceinfo/StorageMeasurement.java    |  2 +-
  4 files changed, 81 insertions(+), 15 deletions(-)
  mode change 100644 => 100755 src/com/android/settings/applications/InstalledAppDetails.java
 
-diff --git a/res/values/cm_strings.xml b/res/values/cm_strings.xml
-index c5350a6..5bbe0f4 100644
---- a/res/values/cm_strings.xml
-+++ b/res/values/cm_strings.xml
-@@ -1270,4 +1270,13 @@ two in order to insert additional control points. \'Remove\' deletes the selecte
-     <string name="enable_adb_cm">Android debugging</string>
-     <!-- Setting checkbox summary for Whether to enable Android debugging support on the phone -->
-     <string name="enable_adb_summary_cm">Enable the Android Debug Bridge (adb) interface</string>
-+
-+    <!-- App moving -->
-+     <string name="app_moving_enable">Enable app moving</string>
-+     <string name="app_moving_disable">Disable app moving</string>
-+     <string name="app_moving_reboot_title">Reboot now?</string>
-+     <string name="app_moving_reboot_enabled_desc">Successfully enabled application moving.\n\nThe device needs to be rebooted for the setting to take effect.</string>
-+     <string name="app_moving_reboot_disabled_desc">Successfully disabled application moving.\n\nThe device needs to be rebooted for the setting to take effect.</string>
-+     <string name="app_moving_reboot_now_button">Reboot now</string>
-+     <string name="app_moving_reboot_later_button">Reboot later</string>
- </resources>
+
 diff --git a/src/com/android/settings/applications/InstalledAppDetails.java b/src/com/android/settings/applications/InstalledAppDetails.java
 old mode 100644
 new mode 100755
