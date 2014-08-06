@@ -1,0 +1,49 @@
+From 7d887fcc06238f33d8d32e7c9e2c28d12f6c4a6a Mon Sep 17 00:00:00 2001
+From: Shubhang Rathore <shubhang92@gmail.com>
+Date: Fri, 25 Jul 2014 22:29:53 +0530
+Subject: [PATCH 2/3] build: enable linaro 4.8.3 toolchain
+
+Change-Id: Iff334c2ed2899f89991441296067e2d98bcedc35
+---
+ core/combo/TARGET_linux-arm.mk | 2 +-
+ envsetup.sh                    | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/core/combo/TARGET_linux-arm.mk b/core/combo/TARGET_linux-arm.mk
+index b2a7e37..1c89e0c 100644
+--- a/core/combo/TARGET_linux-arm.mk
++++ b/core/combo/TARGET_linux-arm.mk
+@@ -49,7 +49,7 @@ include $(TARGET_ARCH_SPECIFIC_MAKEFILE)
+ 
+ # You can set TARGET_TOOLS_PREFIX to get gcc from somewhere else
+ ifeq ($(strip $(TARGET_TOOLS_PREFIX)),)
+-TARGET_TOOLCHAIN_ROOT := prebuilts/gcc/$(HOST_PREBUILT_TAG)/arm/arm-linux-androideabi-$(TARGET_GCC_VERSION)
++TARGET_TOOLCHAIN_ROOT := prebuilts/gcc/$(HOST_PREBUILT_TAG)/arm/linaro-4.8
+ TARGET_TOOLS_PREFIX := $(TARGET_TOOLCHAIN_ROOT)/bin/arm-linux-androideabi-
+ endif
+ 
+diff --git a/envsetup.sh b/envsetup.sh
+index 16392c5..34cf767 100644
+--- a/envsetup.sh
++++ b/envsetup.sh
+@@ -153,7 +153,7 @@ function setpaths()
+     case $ARCH in
+         x86) toolchaindir=x86/i686-linux-android-$targetgccversion/bin
+             ;;
+-        arm) toolchaindir=arm/arm-linux-androideabi-$targetgccversion/bin
++        arm) toolchaindir=arm/linaro-4.8/bin
+             ;;
+         mips) toolchaindir=mips/mipsel-linux-android-$targetgccversion/bin
+             ;;
+@@ -169,7 +169,7 @@ function setpaths()
+     unset ARM_EABI_TOOLCHAIN ARM_EABI_TOOLCHAIN_PATH
+     case $ARCH in
+         arm)
+-            toolchaindir=arm/arm-eabi-$targetgccversion/bin
++            toolchaindir=arm/linaro-4.8/bin
+             if [ -d "$gccprebuiltdir/$toolchaindir" ]; then
+                  export ARM_EABI_TOOLCHAIN="$gccprebuiltdir/$toolchaindir"
+                  ARM_EABI_TOOLCHAIN_PATH=":$gccprebuiltdir/$toolchaindir"
+-- 
+1.9.1
+

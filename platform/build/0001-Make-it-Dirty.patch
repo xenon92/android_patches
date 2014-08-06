@@ -1,0 +1,41 @@
+From e5ef576b7c4b7f1070f59ca5fe21559ce4e69c21 Mon Sep 17 00:00:00 2001
+From: TheBr0ken <jtoro2716@gmail.com>
+Date: Wed, 26 Mar 2014 18:59:43 -0500
+Subject: [PATCH] Make it Dirty
+
+Signed-off-by: Shubhang <shubhang92@gmail.com>
+---
+ core/main.mk | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/core/main.mk b/core/main.mk
+index ae44f1f..4d9c6ee 100644
+--- a/core/main.mk
++++ b/core/main.mk
+@@ -74,7 +74,7 @@ FORCE:
+ 
+ # These goals don't need to collect and include Android.mks/CleanSpec.mks
+ # in the source tree.
+-dont_bother_goals := clean clobber dataclean installclean \
++dont_bother_goals := clean clobber dirty dataclean installclean \
+     help out \
+     snod systemimage-nodeps \
+     stnod systemtarball-nodeps \
+@@ -935,6 +935,14 @@ clean:
+ .PHONY: clobber
+ clobber: clean
+ 
++# Clears out zip and build.prop
++.PHONY: dirty
++dirty:
++	@rm -rf $(OUT_DIR)/target/product/*/system/build.prop
++	@rm -rf $(OUT_DIR)/target/product/*/*.zip
++	@rm -rf $(OUT_DIR)/target/product/*/*.md5sum
++	@echo "build.prop and zip files erased"
++
+ # The rules for dataclean and installclean are defined in cleanbuild.mk.
+ 
+ #xxx scrape this from ALL_MODULE_NAME_TAGS
+-- 
+1.9.1
+

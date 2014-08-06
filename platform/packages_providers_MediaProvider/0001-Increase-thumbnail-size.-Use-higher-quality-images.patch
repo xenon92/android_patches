@@ -1,0 +1,29 @@
+From c461e8f6bb0bb25736d829d7dca273b1e5e99b5c Mon Sep 17 00:00:00 2001
+From: Shubhang Rathore <shubhang92@gmail.com>
+Date: Thu, 24 Jul 2014 19:54:10 +0530
+Subject: [PATCH] Increase thumbnail size. Use higher quality images.
+
+Samsung Galaxy Grand i9082 gets recognized as "normal" screen size.
+But 5" screen size is quite big. Using 500dip is the same as
+declared for "xlarge" screen size. There is no dimension declared
+for "large" screen size.
+
+Change-Id: I6e62ecd16fa622ba45b0bab8c06b9ae776472497
+---
+ res/values/dimens.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/res/values/dimens.xml b/res/values/dimens.xml
+index 7f76c3a..6931fc8 100644
+--- a/res/values/dimens.xml
++++ b/res/values/dimens.xml
+@@ -8,5 +8,5 @@
+ <resources>
+     <!-- maximum size for album art. the real size of the albumart will be divided by two
+     until both width and height are below this value. -->
+-    <dimen name="maximum_thumb_size">320dip</dimen>
++    <dimen name="maximum_thumb_size">500dip</dimen>
+ </resources>
+-- 
+1.9.1
+
