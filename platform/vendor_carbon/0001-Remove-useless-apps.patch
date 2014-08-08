@@ -1,0 +1,50 @@
+From a2a3af1731da2bc93cd32af670594e58b2805c7c Mon Sep 17 00:00:00 2001
+From: Shubhang Rathore <shubhang92@gmail.com>
+Date: Fri, 8 Aug 2014 16:36:18 +0530
+Subject: [PATCH] Remove useless apps
+
+Change-Id: Ifc8edc0de5d91bd4b36948930f688dd82791f040
+---
+ config/common.mk | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/config/common.mk b/config/common.mk
+index d22e6f5..97b2c45 100644
+--- a/config/common.mk
++++ b/config/common.mk
+@@ -73,15 +73,9 @@ PRODUCT_PACKAGES += \
+     Camera \
+     Development \
+     CMFileManager \
+-    Galaxy4 \
+-    HoloSpiralWallpaper \
+     LatinIME \
+-    LiveWallpapers \
+     LiveWallpapersPicker \
+     LockClock \
+-    MagicSmokeWallpapers \
+-    NoiseField \
+-    OmniSwitch \
+     PhaseBeam \
+     PhotoPhase \
+     PhotoTable \
+@@ -89,16 +83,11 @@ PRODUCT_PACKAGES += \
+     Superuser \
+     su \
+     Torch \
+-    VisualizationWallpapers \
+-    VoicePlus \
+     libemoji
+ 
+ # carbon packages
+ PRODUCT_PACKAGES += \
+-    BlueBalls \
+     CarbonAbout \
+-    CarbonDelta \
+-    ROMStats \
+     Wallpapers
+ 
+ # dsp manager
+-- 
+1.9.1
+
