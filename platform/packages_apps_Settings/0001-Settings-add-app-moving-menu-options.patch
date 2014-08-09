@@ -1,52 +1,20 @@
-From 768393d5872e28cc5c7c8603fac01568d58d00de Mon Sep 17 00:00:00 2001
+From af4209613e05e6d6c8f15e0394cd25210c614eba Mon Sep 17 00:00:00 2001
 From: Shubhang Rathore <shubhang92@gmail.com>
-Date: Fri, 25 Jul 2014 22:21:27 +0530
-Subject: [PATCH] APP2SD: rebased patch for settings
+Date: Sat, 9 Aug 2014 13:58:07 +0530
+Subject: [PATCH] Settings: add app moving menu options
 
-Change-Id: Ieb91449fd0857477353a823c444aac8e98d3b31c
+Settings > Apps > Menu
+
+Thanx to chenxiaolong.
+
+Change-Id: I08f5323f4bfd4f0d56fc2f840bad90beb95cb9ac
+Signed-off-by: Shubhang Rathore <shubhang92@gmail.com>
 ---
- .../settings/applications/InstalledAppDetails.java |  6 +-
- .../settings/applications/ManageApplications.java  | 79 +++++++++++++++++++---
- .../settings/deviceinfo/StorageMeasurement.java    |  2 +-
- 4 files changed, 81 insertions(+), 15 deletions(-)
- mode change 100644 => 100755 src/com/android/settings/applications/InstalledAppDetails.java
+ .../settings/applications/ManageApplications.java  | 66 ++++++++++++++++++++--
+ 1 file changed, 61 insertions(+), 5 deletions(-)
 
-
-diff --git a/src/com/android/settings/applications/InstalledAppDetails.java b/src/com/android/settings/applications/InstalledAppDetails.java
-old mode 100644
-new mode 100755
-index 4755d3b..6f45f47
---- a/src/com/android/settings/applications/InstalledAppDetails.java
-+++ b/src/com/android/settings/applications/InstalledAppDetails.java
-@@ -305,7 +305,7 @@ public class InstalledAppDetails extends Fragment
-     }
- 
-     private void initMoveButton() {
--        if (Environment.isExternalStorageEmulated()) {
-+        if (!Environment.isExternalAppsAvailableAndMounted()) {
-             mMoveAppButton.setVisibility(View.INVISIBLE);
-             return;
-         }
-@@ -492,7 +492,7 @@ public class InstalledAppDetails extends Fragment
-         mExternalCodeSize = (TextView)view.findViewById(R.id.external_code_size_text);
-         mExternalDataSize = (TextView)view.findViewById(R.id.external_data_size_text);
- 
--        if (Environment.isExternalStorageEmulated()) {
-+        if (!Environment.isExternalAppsAvailableAndMounted()) {
-             ((View)mExternalCodeSize.getParent()).setVisibility(View.GONE);
-             ((View)mExternalDataSize.getParent()).setVisibility(View.GONE);
-         }
-@@ -1045,7 +1045,7 @@ public class InstalledAppDetails extends Fragment
-             mHaveSizes = true;
-             long codeSize = mAppEntry.codeSize;
-             long dataSize = mAppEntry.dataSize;
--            if (Environment.isExternalStorageEmulated()) {
-+            if (!Environment.isExternalAppsAvailableAndMounted()) {
-                 codeSize += mAppEntry.externalCodeSize;
-                 dataSize +=  mAppEntry.externalDataSize;
-             } else {
 diff --git a/src/com/android/settings/applications/ManageApplications.java b/src/com/android/settings/applications/ManageApplications.java
-index 286cf7c..a95a1b6 100644
+index 9456286..e417715 100644
 --- a/src/com/android/settings/applications/ManageApplications.java
 +++ b/src/com/android/settings/applications/ManageApplications.java
 @@ -41,6 +41,7 @@ import android.os.Bundle;
@@ -73,42 +41,19 @@ index 286cf7c..a95a1b6 100644
      private static final String EXTRA_RESET_DIALOG = "resetDialog";
  
      // attributes used as keys when passing values to InstalledAppDetails activity
-@@ -169,7 +172,9 @@ public class ManageApplications extends Fragment implements
+@@ -169,8 +172,10 @@ public class ManageApplications extends Fragment implements
      public static final int SORT_ORDER_SIZE = MENU_OPTIONS_BASE + 5;
      public static final int SHOW_RUNNING_SERVICES = MENU_OPTIONS_BASE + 6;
      public static final int SHOW_BACKGROUND_PROCESSES = MENU_OPTIONS_BASE + 7;
 -    public static final int RESET_APP_PREFERENCES = MENU_OPTIONS_BASE + 8;
+-    public static final int SHOW_PROTECTED_APPS = MENU_OPTIONS_BASE + 9;
 +    public static final int APP_MOVING_ENABLE = MENU_OPTIONS_BASE + 8;
 +    public static final int APP_MOVING_DISABLE = MENU_OPTIONS_BASE + 9;
 +    public static final int RESET_APP_PREFERENCES = MENU_OPTIONS_BASE + 10;
-     public static final int SHOW_PROTECTED_APPS = MENU_OPTIONS_BASE + 9;
++    public static final int SHOW_PROTECTED_APPS = MENU_OPTIONS_BASE + 11;
  
      // sort order
-@@ -338,7 +343,7 @@ public class ManageApplications extends Fragment implements
-                 if (mContainerService != null) {
-                     try {
-                         final long[] stats = mContainerService.getFileSystemStats(
--                                Environment.getExternalStorageDirectory().getPath());
-+                                Environment.getExternalAppsVolumeDirectory().getPath());
-                         mTotalStorage = stats[0];
-                         mFreeStorage = stats[1];
-                     } catch (RemoteException e) {
-@@ -366,13 +371,13 @@ public class ManageApplications extends Fragment implements
-                     }
-                 }
- 
--                final boolean emulatedStorage = Environment.isExternalStorageEmulated();
-+                final boolean externalApps = Environment.isExternalAppsAvailableAndMounted();
-                 if (mApplications != null) {
-                     final int N = mApplications.getCount();
-                     for (int i=0; i<N; i++) {
-                         ApplicationsState.AppEntry ae = mApplications.getAppEntry(i);
-                         mAppStorage += ae.codeSize + ae.dataSize;
--                        if (emulatedStorage) {
-+                        if (!externalApps) {
-                             mAppStorage += ae.externalCodeSize + ae.externalDataSize;
-                         }
-                     }
+     private int mSortOrder = SORT_ORDER_ALPHA;
 @@ -466,6 +471,7 @@ public class ManageApplications extends Fragment implements
      private View mRootView;
      private ViewPager mViewPager;
@@ -117,35 +62,6 @@ index 286cf7c..a95a1b6 100644
      AlertDialog mResetDialog;
  
      class MyPagerAdapter extends PagerAdapter
-@@ -608,8 +614,8 @@ public class ManageApplications extends Fragment implements
-             if (DEBUG) Log.i(TAG, "Rebuilding app list...");
-             ApplicationsState.AppFilter filterObj;
-             Comparator<AppEntry> comparatorObj;
--            boolean emulated = Environment.isExternalStorageEmulated();
--            if (emulated) {
-+            boolean externalApps = Environment.isExternalAppsAvailableAndMounted();
-+            if (!externalApps) {
-                 mWhichSize = SIZE_TOTAL;
-             } else {
-                 mWhichSize = SIZE_INTERNAL;
-@@ -620,7 +626,7 @@ public class ManageApplications extends Fragment implements
-                     break;
-                 case FILTER_APPS_SDCARD:
-                     filterObj = ApplicationsState.ON_SD_CARD_FILTER;
--                    if (!emulated) {
-+                    if (externalApps) {
-                         mWhichSize = SIZE_EXTERNAL;
-                     }
-                     break;
-@@ -873,7 +879,7 @@ public class ManageApplications extends Fragment implements
-                 LIST_TYPE_DOWNLOADED, this, savedInstanceState);
-         mTabs.add(tab);
- 
--        if (!Environment.isExternalStorageEmulated()) {
-+        if (Environment.isExternalAppsAvailableAndMounted()) {
-             tab = new TabInfo(this, mApplicationsState,
-                     getActivity().getString(R.string.filter_apps_onsdcard),
-                     LIST_TYPE_SDCARD, this, savedInstanceState);
 @@ -922,6 +928,10 @@ public class ManageApplications extends Fragment implements
              ((PreferenceFrameLayout.LayoutParams) rootView.getLayoutParams()).removeBorders = true;
          }
@@ -191,29 +107,30 @@ index 286cf7c..a95a1b6 100644
 +                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 +        menu.add(0, RESET_APP_PREFERENCES, 6, R.string.reset_app_preferences)
                  .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-         menu.add(0, SHOW_PROTECTED_APPS, 5, R.string.protected_apps)
-                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-@@ -1089,6 +1112,8 @@ public class ManageApplications extends Fragment implements
+         if (!Utils.isRestrictedProfile(getActivity())) {
+             menu.add(0, SHOW_PROTECTED_APPS, 5, R.string.protected_apps)
+@@ -1091,6 +1114,8 @@ public class ManageApplications extends Fragment implements
              mOptionsMenu.findItem(SORT_ORDER_SIZE).setVisible(false);
              mOptionsMenu.findItem(SHOW_RUNNING_SERVICES).setVisible(showingBackground);
              mOptionsMenu.findItem(SHOW_BACKGROUND_PROCESSES).setVisible(!showingBackground);
 +            mOptionsMenu.findItem(APP_MOVING_ENABLE).setVisible(false);
 +            mOptionsMenu.findItem(APP_MOVING_DISABLE).setVisible(false);
              mOptionsMenu.findItem(RESET_APP_PREFERENCES).setVisible(false);
-             mOptionsMenu.findItem(SHOW_PROTECTED_APPS).setVisible(true);
-             mShowBackground = showingBackground;
-@@ -1097,11 +1122,30 @@ public class ManageApplications extends Fragment implements
+             if (!Utils.isRestrictedProfile(getActivity())) {
+                 mOptionsMenu.findItem(SHOW_PROTECTED_APPS).setVisible(true);
+@@ -1101,6 +1126,8 @@ public class ManageApplications extends Fragment implements
              mOptionsMenu.findItem(SORT_ORDER_SIZE).setVisible(mSortOrder != SORT_ORDER_SIZE);
              mOptionsMenu.findItem(SHOW_RUNNING_SERVICES).setVisible(false);
              mOptionsMenu.findItem(SHOW_BACKGROUND_PROCESSES).setVisible(false);
 +            mOptionsMenu.findItem(APP_MOVING_ENABLE).setVisible(!AppMoving.isEnabled());
 +            mOptionsMenu.findItem(APP_MOVING_DISABLE).setVisible(AppMoving.isEnabled());
              mOptionsMenu.findItem(RESET_APP_PREFERENCES).setVisible(true);
-             mOptionsMenu.findItem(SHOW_PROTECTED_APPS).setVisible(true);
+             if (!Utils.isRestrictedProfile(getActivity())) {
+                 mOptionsMenu.findItem(SHOW_PROTECTED_APPS).setVisible(true);
+@@ -1108,6 +1135,22 @@ public class ManageApplications extends Fragment implements
          }
      }
  
-+
 +    void buildRebootDialog() {
 +        if (mRebootDialog == null) {
 +            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -233,7 +150,7 @@ index 286cf7c..a95a1b6 100644
      void buildResetDialog() {
          if (mResetDialog == null) {
              AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-@@ -1116,7 +1160,9 @@ public class ManageApplications extends Fragment implements
+@@ -1122,7 +1165,9 @@ public class ManageApplications extends Fragment implements
  
      @Override
      public void onDismiss(DialogInterface dialog) {
@@ -244,7 +161,7 @@ index 286cf7c..a95a1b6 100644
              mResetDialog = null;
          }
      }
-@@ -1124,7 +1170,12 @@ public class ManageApplications extends Fragment implements
+@@ -1130,7 +1175,12 @@ public class ManageApplications extends Fragment implements
  
      @Override
      public void onClick(DialogInterface dialog, int which) {
@@ -258,7 +175,7 @@ index 286cf7c..a95a1b6 100644
              final PackageManager pm = getActivity().getPackageManager();
              final IPackageManager mIPm = IPackageManager.Stub.asInterface(
                      ServiceManager.getService("package"));
-@@ -1211,6 +1262,12 @@ public class ManageApplications extends Fragment implements
+@@ -1217,6 +1267,12 @@ public class ManageApplications extends Fragment implements
              if (mCurTab != null && mCurTab.mRunningProcessesView != null) {
                  mCurTab.mRunningProcessesView.mAdapter.setShowBackground(true);
              }
@@ -271,19 +188,6 @@ index 286cf7c..a95a1b6 100644
          } else if (menuId == RESET_APP_PREFERENCES) {
              buildResetDialog();
          } else if (menuId == SHOW_PROTECTED_APPS) {
-diff --git a/src/com/android/settings/deviceinfo/StorageMeasurement.java b/src/com/android/settings/deviceinfo/StorageMeasurement.java
-index 34ef62b..e1dd3bb 100644
---- a/src/com/android/settings/deviceinfo/StorageMeasurement.java
-+++ b/src/com/android/settings/deviceinfo/StorageMeasurement.java
-@@ -249,7 +249,7 @@ public class StorageMeasurement {
-                 long codeSize = stats.codeSize;
-                 long dataSize = stats.dataSize;
-                 long cacheSize = stats.cacheSize;
--                if (Environment.isExternalStorageEmulated()) {
-+                if (!Environment.isExternalAppsAvailableAndMounted()) {
-                     // Include emulated storage when measuring internal. OBB is
-                     // shared on emulated storage, so treat as code.
-                     codeSize += stats.externalCodeSize + stats.externalObbSize;
 -- 
 1.9.1
 
