@@ -1,18 +1,21 @@
-From e5ef576b7c4b7f1070f59ca5fe21559ce4e69c21 Mon Sep 17 00:00:00 2001
-From: TheBr0ken <jtoro2716@gmail.com>
-Date: Wed, 26 Mar 2014 18:59:43 -0500
-Subject: [PATCH] Make it Dirty
+From 9b6b0195c18517443866c1e1691dc24926a8cd92 Mon Sep 17 00:00:00 2001
+From: Shubhang Rathore <shubhang92@gmail.com>
+Date: Sun, 17 Aug 2014 13:53:14 -0400
+Subject: [PATCH] build: enable 'make dirty' command
 
-Signed-off-by: Shubhang <shubhang92@gmail.com>
+Change-Id: Idf6810ebd425077ba85301d0124a6ba899bccc1c
 ---
  core/main.mk | 10 +++++++++-
  1 file changed, 9 insertions(+), 1 deletion(-)
+ mode change 100755 => 100644 core/main.mk
 
 diff --git a/core/main.mk b/core/main.mk
-index ae44f1f..4d9c6ee 100644
+old mode 100755
+new mode 100644
+index 6544742..d6bc7c3
 --- a/core/main.mk
 +++ b/core/main.mk
-@@ -74,7 +74,7 @@ FORCE:
+@@ -70,7 +70,7 @@ FORCE:
  
  # These goals don't need to collect and include Android.mks/CleanSpec.mks
  # in the source tree.
@@ -21,9 +24,9 @@ index ae44f1f..4d9c6ee 100644
      help out \
      snod systemimage-nodeps \
      stnod systemtarball-nodeps \
-@@ -935,6 +935,14 @@ clean:
- .PHONY: clobber
- clobber: clean
+@@ -952,6 +952,14 @@ novo:
+ 	@rm -rf $(OUT_DIR)/target/*
+ 	@echo -e ${CL_GRN}"Target directory removed."${CL_RST}
  
 +# Clears out zip and build.prop
 +.PHONY: dirty
