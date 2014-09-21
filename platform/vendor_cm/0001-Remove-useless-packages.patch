@@ -1,19 +1,19 @@
-From e64a0aa2d1bfb7c8feb8fb1b10b6a87952d688ad Mon Sep 17 00:00:00 2001
+From c377c9a8276e175447ee04e7f3c96366fb2025c6 Mon Sep 17 00:00:00 2001
 From: Shubhang Rathore <shubhang92@gmail.com>
-Date: Fri, 1 Aug 2014 23:46:06 +0530
-Subject: [PATCH] vendom/cm: remove useless packages
+Date: Sun, 21 Sep 2014 22:33:54 +0530
+Subject: [PATCH] Remove useless packages
 
-Change-Id: I6ffc880bfc2a2dac8e24a74f931a6a8441213a40
+Change-Id: I7ba47e6e1cc0c6290ef3dd95fd31bfac576ed972
 ---
- config/common.mk      |  6 ------
+ config/common.mk      |  5 -----
  config/common_full.mk | 14 --------------
- 2 files changed, 20 deletions(-)
+ 2 files changed, 19 deletions(-)
 
 diff --git a/config/common.mk b/config/common.mk
-index 20138e1..5b51aed 100644
+index d32640c..bac9680 100644
 --- a/config/common.mk
 +++ b/config/common.mk
-@@ -132,23 +132,17 @@ PRODUCT_PACKAGES += \
+@@ -136,22 +136,17 @@ PRODUCT_PACKAGES += \
  
  # Optional CM packages
  PRODUCT_PACKAGES += \
@@ -33,7 +33,6 @@ index 20138e1..5b51aed 100644
      CMFileManager \
      LockClock \
 -    CMUpdater \
--    CMFota \
      CMAccount \
      CMHome
  
