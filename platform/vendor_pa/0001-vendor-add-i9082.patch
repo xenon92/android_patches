@@ -1,0 +1,104 @@
+From 0a730bbbbd5b3ce092550c47aab0b1eadc6f7e37 Mon Sep 17 00:00:00 2001
+From: Shubhang Rathore <shubhang92@gmail.com>
+Date: Fri, 3 Oct 2014 13:17:25 +0530
+Subject: [PATCH] vendor: add i9082
+
+Change-Id: I3b912194a04f068f5276fa866efa34aeac08d06a
+---
+ configs/bootanimation.mk    |  2 +-
+ products/AndroidProducts.mk |  3 +++
+ products/pa_i9082.mk        | 41 +++++++++++++++++++++++++++++++++++++++++
+ vendorsetup.sh              |  1 +
+ 4 files changed, 46 insertions(+), 1 deletion(-)
+ create mode 100644 products/pa_i9082.mk
+
+diff --git a/configs/bootanimation.mk b/configs/bootanimation.mk
+index ae2f940..dac3b48 100644
+--- a/configs/bootanimation.mk
++++ b/configs/bootanimation.mk
+@@ -29,7 +29,7 @@ ifneq ($(filter pa_amami pa_aries pa_edison pa_maserasti pa_spyder pa_targa pa_u
+ endif
+ 
+ # PA HDPI Devices
+-ifneq ($(filter pa_galaxysmtd pa_i9100 pa_i9100g pa_p3100 pa_p3110 pa_taoshan pa_ville,$(TARGET_PRODUCT)),)
++ifneq ($(filter pa_galaxysmtd pa_i9082 pa_i9100 pa_i9100g pa_p3100 pa_p3110 pa_taoshan pa_ville,$(TARGET_PRODUCT)),)
+     PRODUCT_COPY_FILES += \
+         vendor/pa/prebuilt/bootanimation/800x480.zip:system/media/bootanimation.zip
+ endif
+diff --git a/products/AndroidProducts.mk b/products/AndroidProducts.mk
+index 445b0db..479dc1a 100644
+--- a/products/AndroidProducts.mk
++++ b/products/AndroidProducts.mk
+@@ -72,6 +72,9 @@ endif
+ ifeq (pa_honami,$(TARGET_PRODUCT))
+     PRODUCT_MAKEFILES += $(LOCAL_DIR)/pa_honami.mk
+ endif
++ifeq (pa_i9082,$(TARGET_PRODUCT))
++    PRODUCT_MAKEFILES += $(LOCAL_DIR)/pa_i9082.mk
++endif
+ ifeq (pa_i9100,$(TARGET_PRODUCT))
+     PRODUCT_MAKEFILES += $(LOCAL_DIR)/pa_i9100.mk
+ endif
+diff --git a/products/pa_i9082.mk b/products/pa_i9082.mk
+new file mode 100644
+index 0000000..95796c4
+--- /dev/null
++++ b/products/pa_i9082.mk
+@@ -0,0 +1,41 @@
++# Copyright (C) 2013 ParanoidAndroid Project
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#      http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++
++# Check for target product
++ifeq (pa_i9082,$(TARGET_PRODUCT))
++
++# OVERLAY_TARGET adds overlay asset source
++OVERLAY_TARGET := pa_hdpi
++
++# Build paprefs from sources
++PREFS_FROM_SOURCE ?= false
++
++# Inherit telephony common stuff
++$(call inherit-product, vendor/pa/configs/telephony.mk)
++
++# Include ParanoidAndroid common configuration
++include vendor/pa/main.mk
++
++# Inherit AOSP device configuration
++$(call inherit-product, device/samsung/i9082/full_i9082.mk)
++
++# Override AOSP build properties
++PRODUCT_NAME := pa_i9082
++PRODUCT_BRAND := samsung
++PRODUCT_MANUFACTURER := samsung
++PRODUCT_MODEL := GT-I9082
++
++#Set build fingerprint / ID / Prduct Name ect.
++PRODUCT_BUILD_PROP_OVERRIDES += PRODUCT_NAME=baffinvj TARGET_DEVICE=baffin BUILD_FINGERPRINT=samsung/baffinvj/baffin:4.1.2/JZO54K/I9082LDCAMC2:user/release-keys PRIVATE_BUILD_DESC="baffinvj-user 4.1.2 JZO54K I9082LDCAMC2 release-keys"
++endif
+\ No newline at end of file
+diff --git a/vendorsetup.sh b/vendorsetup.sh
+index d8cb83c..f75b402 100644
+--- a/vendorsetup.sh
++++ b/vendorsetup.sh
+@@ -18,6 +18,7 @@ add_lunch_combo pa_gee-userdebug
+ add_lunch_combo pa_geeb-userdebug
+ add_lunch_combo pa_hercules-userdebug
+ add_lunch_combo pa_honami-userdebug
++add_lunch_combo pa_i9082-userdebug
+ add_lunch_combo pa_i9100-userdebug
+ add_lunch_combo pa_i9100g-userdebug
+ add_lunch_combo pa_i9300-userdebug
+-- 
+1.9.1
+
