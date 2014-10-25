@@ -109,18 +109,23 @@ index 1bcd1a5..a0a1735 100644
              android:layout_height="@dimen/carrier_label_height"
              android:layout_width="match_parent"
 diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBar.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBar.java
-index 6762c4d..5acc1b3 100644
+index 203233b..e939d96 100644
 --- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBar.java
 +++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBar.java
-@@ -821,7 +821,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
+@@ -822,12 +822,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
              }
  
              mCarrierLabel = (TextView)mStatusBarWindow.findViewById(R.id.carrier_label);
--            mSubsLabel = (TextView)mStatusBarWindow.findViewById(R.id.subs_label);
+-            mSubsLabel = mStatusBarWindow.findViewById(R.id.subs_label);
+-            int numPhones = MSimTelephonyManager.getDefault().getPhoneCount();
+-            if (numPhones == 3) {
+-                mSubsLabel.findViewById(R.id.sub2_separator).setVisibility(View.VISIBLE);
+-                mSubsLabel.findViewById(R.id.sub3_label).setVisibility(View.VISIBLE);
+-            }
              mShowCarrierInPanel = (mCarrierLabel != null);
  
              if (DEBUG) Log.v(TAG, "carrierlabel=" + mCarrierLabel + " show=" +
-@@ -832,12 +831,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
+@@ -838,12 +832,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                  // for mobile devices, we always show mobile connection info here (SPN/PLMN)
                  // for other devices, we show whatever network is connected
                  if (mMSimNetworkController.hasMobileDataFeature()) {
@@ -136,84 +141,3 @@ index 6762c4d..5acc1b3 100644
                      @Override
 -- 
 1.8.5.2 (Apple Git-48)
-
-
-From 815ad456d206015242c4eceb2e461b4a0e27ed8a Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Wed, 17 Sep 2014 17:16:22 +0700
-Subject: [PATCH 3/3] Keyguard: fix chopped keyguard on hdpi MSim devices
-
-Both the CarrierText and MSimCarrierText were in the View, taking
-additional space. Remove CarrierText from the view in case of MSim.
-
-Change-Id: I803695044d06470ef9af59863ba92444e41488f5
----
- .../Keyguard/res/layout/msim_keyguard_carrier_area.xml     |  1 +
- .../src/com/android/keyguard/EmergencyCarrierArea.java     | 14 +++++++++++++-
- .../src/com/android/keyguard/KeyguardHostView.java         |  6 ++++++
- 3 files changed, 20 insertions(+), 1 deletion(-)
-
-diff --git a/packages/Keyguard/res/layout/msim_keyguard_carrier_area.xml b/packages/Keyguard/res/layout/msim_keyguard_carrier_area.xml
-index 4169403..18525f1 100644
---- a/packages/Keyguard/res/layout/msim_keyguard_carrier_area.xml
-+++ b/packages/Keyguard/res/layout/msim_keyguard_carrier_area.xml
-@@ -31,6 +31,7 @@
-     android:clickable="true">
- 
-     <com.android.keyguard.MSimCarrierText
-+        android:id="@+id/msim_carrier_text"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:singleLine="true"
-diff --git a/packages/Keyguard/src/com/android/keyguard/EmergencyCarrierArea.java b/packages/Keyguard/src/com/android/keyguard/EmergencyCarrierArea.java
-index 6d392fc..1c40df3 100644
---- a/packages/Keyguard/src/com/android/keyguard/EmergencyCarrierArea.java
-+++ b/packages/Keyguard/src/com/android/keyguard/EmergencyCarrierArea.java
-@@ -40,7 +40,12 @@ public class EmergencyCarrierArea extends LinearLayout {
-     @Override
-     protected void onFinishInflate() {
-         super.onFinishInflate();
--        mCarrierText = (CarrierText) findViewById(R.id.carrier_text);
-+
-+        if (!KeyguardUpdateMonitor.sIsMultiSimEnabled) {
-+            // For MSIM, we need to wait until the view has been inflated to find it
-+            mCarrierText = (CarrierText) findViewById(R.id.carrier_text);
-+        }
-+
-         mEmergencyButton = (EmergencyButton) findViewById(R.id.emergency_call_button);
- 
-         // The emergency button overlaps the carrier text, only noticeable when highlighted.
-@@ -48,6 +53,13 @@ public class EmergencyCarrierArea extends LinearLayout {
-         mEmergencyButton.setOnTouchListener(new OnTouchListener(){
-             @Override
-             public boolean onTouch(View v, MotionEvent event) {
-+
-+                if (mCarrierText == null) {
-+                    // We're using MSIM
-+                    mCarrierText = (CarrierText) findViewById(R.id.msim_keyguard_carrier_area)
-+                            .findViewById(R.id.msim_carrier_text);
-+                }
-+
-                 switch(event.getAction()) {
-                     case MotionEvent.ACTION_DOWN:
-                         mCarrierText.animate().alpha(0);
-diff --git a/packages/Keyguard/src/com/android/keyguard/KeyguardHostView.java b/packages/Keyguard/src/com/android/keyguard/KeyguardHostView.java
-index d73dc37..a46f656 100644
---- a/packages/Keyguard/src/com/android/keyguard/KeyguardHostView.java
-+++ b/packages/Keyguard/src/com/android/keyguard/KeyguardHostView.java
-@@ -998,6 +998,12 @@ public class KeyguardHostView extends KeyguardViewBase {
-                 ViewStub vStub = (ViewStub) (v.findViewById(R.id.stub_msim_carrier_text));
-                 if (vStub != null) {
-                     vStub.inflate();
-+
-+                    // Remove the non-MSim carrier text
-+                    View carrierText = v.findViewById(R.id.carrier_text);
-+                    if (carrierText != null) {
-+                        ((EmergencyCarrierArea) carrierText.getParent()).removeView(carrierText);
-+                    }
-                 }
-             }
-             mSecurityViewContainer.addView(v);
--- 
-1.8.5.2 (Apple Git-48)
-
