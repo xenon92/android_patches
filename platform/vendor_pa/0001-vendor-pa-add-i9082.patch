@@ -1,9 +1,9 @@
-From 0a730bbbbd5b3ce092550c47aab0b1eadc6f7e37 Mon Sep 17 00:00:00 2001
+From 637ceee0242eb3e442cae1ae5cad2f84a07d52c3 Mon Sep 17 00:00:00 2001
 From: Shubhang Rathore <shubhang92@gmail.com>
-Date: Fri, 3 Oct 2014 13:17:25 +0530
-Subject: [PATCH] vendor: add i9082
+Date: Sat, 25 Oct 2014 11:09:31 +0530
+Subject: [PATCH] vendor/pa: add i9082
 
-Change-Id: I3b912194a04f068f5276fa866efa34aeac08d06a
+Change-Id: I901ba7aa6f89aef121d43d2ad85ca0b7af1574a3
 ---
  configs/bootanimation.mk    |  2 +-
  products/AndroidProducts.mk |  3 +++
@@ -13,23 +13,23 @@ Change-Id: I3b912194a04f068f5276fa866efa34aeac08d06a
  create mode 100644 products/pa_i9082.mk
 
 diff --git a/configs/bootanimation.mk b/configs/bootanimation.mk
-index ae2f940..dac3b48 100644
+index 48bee19..e6b8d06 100644
 --- a/configs/bootanimation.mk
 +++ b/configs/bootanimation.mk
 @@ -29,7 +29,7 @@ ifneq ($(filter pa_amami pa_aries pa_edison pa_maserasti pa_spyder pa_targa pa_u
  endif
  
  # PA HDPI Devices
--ifneq ($(filter pa_galaxysmtd pa_i9100 pa_i9100g pa_p3100 pa_p3110 pa_taoshan pa_ville,$(TARGET_PRODUCT)),)
-+ifneq ($(filter pa_galaxysmtd pa_i9082 pa_i9100 pa_i9100g pa_p3100 pa_p3110 pa_taoshan pa_ville,$(TARGET_PRODUCT)),)
+-ifneq ($(filter pa_condor pa_galaxysmtd pa_i9100 pa_i9100g pa_p3100 pa_p3110 pa_taoshan pa_ville,$(TARGET_PRODUCT)),)
++ifneq ($(filter pa_condor pa_galaxysmtd pa_i9082 pa_i9100 pa_i9100g pa_p3100 pa_p3110 pa_taoshan pa_ville,$(TARGET_PRODUCT)),)
      PRODUCT_COPY_FILES += \
          vendor/pa/prebuilt/bootanimation/800x480.zip:system/media/bootanimation.zip
  endif
 diff --git a/products/AndroidProducts.mk b/products/AndroidProducts.mk
-index 445b0db..479dc1a 100644
+index c257b42..3fdc6be 100644
 --- a/products/AndroidProducts.mk
 +++ b/products/AndroidProducts.mk
-@@ -72,6 +72,9 @@ endif
+@@ -78,6 +78,9 @@ endif
  ifeq (pa_honami,$(TARGET_PRODUCT))
      PRODUCT_MAKEFILES += $(LOCAL_DIR)/pa_honami.mk
  endif
@@ -88,12 +88,12 @@ index 0000000..95796c4
 +endif
 \ No newline at end of file
 diff --git a/vendorsetup.sh b/vendorsetup.sh
-index d8cb83c..f75b402 100644
+index b988823..3848c60 100644
 --- a/vendorsetup.sh
 +++ b/vendorsetup.sh
-@@ -18,6 +18,7 @@ add_lunch_combo pa_gee-userdebug
- add_lunch_combo pa_geeb-userdebug
+@@ -20,6 +20,7 @@ add_lunch_combo pa_geeb-userdebug
  add_lunch_combo pa_hercules-userdebug
+ add_lunch_combo pa_hlte-userdebug
  add_lunch_combo pa_honami-userdebug
 +add_lunch_combo pa_i9082-userdebug
  add_lunch_combo pa_i9100-userdebug
