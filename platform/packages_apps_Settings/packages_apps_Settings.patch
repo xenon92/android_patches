@@ -1,0 +1,40 @@
+From 3d4738ded81b1e6caad113afbe582a781371301f Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 16 Nov 2014 08:55:55 +0700
+Subject: [PATCH] Settings: i9082: disable manual provisioning
+
+Does not work here
+
+Change-Id: I1096b349ccf60b05aa261289b6bc7127beffaca5
+---
+ src/com/android/settings/sim/SimSettings.java | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/src/com/android/settings/sim/SimSettings.java b/src/com/android/settings/sim/SimSettings.java
+index 035693f..0aa47b3 100644
+--- a/src/com/android/settings/sim/SimSettings.java
++++ b/src/com/android/settings/sim/SimSettings.java
+@@ -165,19 +165,13 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
+         for (int i = 0; i < mNumSlots; ++i) {
+             final SubInfoRecord sir = findRecordBySlotId(i);
+             simCards.addPreference(new SimPreference(getActivity(), sir, i));
+-            if (mNumSlots > 1) {
+-                mSimEnablers.add(i, new MultiSimEnablerPreference(
+-                        getActivity(), sir, mHandler, i));
+-                simEnablers.addPreference(mSimEnablers.get(i));
+-            } else {
+-                removePreference(SIM_ENABLER_CATEGORY);
+-            }
+             // Do not display deactivated subInfo in preference list
+             if ((sir != null) && (sir.mStatus == SubscriptionManager.ACTIVE)) {
+                 mNumSims++;
+                 mAvailableSubInfos.add(sir);
+             }
+         }
++        removePreference(SIM_ENABLER_CATEGORY);
+     }
+ 
+     private void updateAllOptions() {
+-- 
+1.9.3 (Apple Git-50)
+

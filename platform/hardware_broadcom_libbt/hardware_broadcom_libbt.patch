@@ -1,4 +1,4 @@
-From 9ea34a45b82771a564ba9549752d152fbd529acf Mon Sep 17 00:00:00 2001
+From 47e03c577d9fbe9f407271b3716af1c9fbe7add1 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 20:09:12 +0700
 Subject: [PATCH] libbt: switch to N_BRCM_HCI line disclipline for userial
@@ -10,10 +10,10 @@ Change-Id: I12c297c6b26fc0cb6f0a36ed8f5d04d4d36a4092
  1 file changed, 11 insertions(+)
 
 diff --git a/src/userial_vendor.c b/src/userial_vendor.c
-index 5233d19..86d98e8 100755
+index 0f3f527..f4278ab 100644
 --- a/src/userial_vendor.c
 +++ b/src/userial_vendor.c
-@@ -183,6 +183,10 @@ int userial_vendor_open(tUSERIAL_CFG *p_cfg)
+@@ -195,6 +195,10 @@ int userial_vendor_open(tUSERIAL_CFG *p_cfg)
      uint16_t parity;
      uint8_t stop_bits;
  
@@ -24,7 +24,7 @@ index 5233d19..86d98e8 100755
      vnd_userial.fd = -1;
  
      if (!userial_to_tcio_baud(p_cfg->baud, &baud))
-@@ -252,6 +256,13 @@ int userial_vendor_open(tUSERIAL_CFG *p_cfg)
+@@ -264,6 +268,13 @@ int userial_vendor_open(tUSERIAL_CFG *p_cfg)
      tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
  
  #if (BT_WAKE_VIA_USERIAL_IOCTL==TRUE)
@@ -39,5 +39,5 @@ index 5233d19..86d98e8 100755
  #endif
  
 -- 
-1.8.3.4 (Apple Git-47)
+1.9.3 (Apple Git-50)
 

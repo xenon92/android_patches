@@ -1,7 +1,8 @@
-From 95cf7f262c6e4be6cd73a9a2491efab14db7f554 Mon Sep 17 00:00:00 2001
+From 8d4571d016725fcd81654047613180625b1dbe62 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 31 May 2014 12:34:56 +0700
-Subject: [PATCH] telephony: support for RIL that does not send UNSOL_CALL_RING
+Subject: [PATCH 1/2] telephony: support for RIL that does not send
+ UNSOL_CALL_RING
 
 Samsung Broadcom RIL does not send UNSOL_CALL_RING at all, so it
 needs to be faked or non loop (e.g. Digital Phone) ringtones
@@ -13,10 +14,10 @@ Change-Id: Ib7373d32777f6c42ee488972a7aa63ae8e1cd09b
  1 file changed, 19 insertions(+)
 
 diff --git a/src/java/com/android/internal/telephony/PhoneBase.java b/src/java/com/android/internal/telephony/PhoneBase.java
-index b361aae..596c734 100644
+index a021997..67053bd 100644
 --- a/src/java/com/android/internal/telephony/PhoneBase.java
 +++ b/src/java/com/android/internal/telephony/PhoneBase.java
-@@ -150,6 +150,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -201,6 +201,7 @@ public abstract class PhoneBase extends Handler implements Phone {
      boolean mDnsCheckDisabled;
      public DcTrackerBase mDcTracker;
      boolean mDoesRilSendMultipleCallRing;
@@ -24,7 +25,7 @@ index b361aae..596c734 100644
      int mCallRingContinueToken;
      int mCallRingDelay;
      public boolean mIsTheCurrentActivePhone = true;
-@@ -326,6 +327,11 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -413,6 +414,11 @@ public abstract class PhoneBase extends Handler implements Phone {
                  TelephonyProperties.PROPERTY_RIL_SENDS_MULTIPLE_CALL_RING, true);
          Rlog.d(LOG_TAG, "mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
  
@@ -36,8 +37,8 @@ index b361aae..596c734 100644
          mCallRingDelay = SystemProperties.getInt(
                  TelephonyProperties.PROPERTY_CALL_RING_DELAY, 3000);
          Rlog.d(LOG_TAG, "mCallRingDelay=" + mCallRingDelay);
-@@ -1369,6 +1375,18 @@ public abstract class PhoneBase extends Handler implements Phone {
-     protected void notifyNewRingingConnectionP(Connection cn) {
+@@ -1725,6 +1731,18 @@ public abstract class PhoneBase extends Handler implements Phone {
+     public void notifyNewRingingConnectionP(Connection cn) {
          if (!mIsVoiceCapable)
              return;
 +
@@ -55,7 +56,7 @@ index b361aae..596c734 100644
          AsyncResult ar = new AsyncResult(null, cn, null);
          mNewRingingConnectionRegistrants.notifyRegistrants(ar);
      }
-@@ -1510,6 +1528,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -1968,6 +1986,7 @@ public abstract class PhoneBase extends Handler implements Phone {
          pw.println(" mDnsCheckDisabled=" + mDnsCheckDisabled);
          pw.println(" mDcTracker=" + mDcTracker);
          pw.println(" mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
@@ -64,5 +65,32 @@ index b361aae..596c734 100644
          pw.println(" mCallRingDelay=" + mCallRingDelay);
          pw.println(" mIsTheCurrentActivePhone=" + mIsTheCurrentActivePhone);
 -- 
-1.9.1
+1.9.3 (Apple Git-50)
+
+
+From 4d280be4a8d4d791b38b5ee1732beb9755de7482 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sat, 15 Nov 2014 17:39:50 +0700
+Subject: [PATCH 2/2] telephony: RIL: i9082: set correct rild names
+
+Change-Id: Idf8e98ae2f36f30b84be04b7b062ca4b52cebd8a
+---
+ src/java/com/android/internal/telephony/RIL.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
+index c2dd351..56dfa2e 100644
+--- a/src/java/com/android/internal/telephony/RIL.java
++++ b/src/java/com/android/internal/telephony/RIL.java
+@@ -299,7 +299,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
+     static final int RESPONSE_SOLICITED = 0;
+     static final int RESPONSE_UNSOLICITED = 1;
+ 
+-    static final String[] SOCKET_NAME_RIL = {"rild", "rild2", "rild3"};
++    static final String[] SOCKET_NAME_RIL = {"rild", "rild1", "rild2"};
+ 
+     static final int SOCKET_OPEN_RETRY_MILLIS = 4 * 1000;
+ 
+-- 
+1.9.3 (Apple Git-50)
 

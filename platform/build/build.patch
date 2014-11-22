@@ -1,0 +1,65 @@
+From c9a7030a5476353e69d3e7d1f984312fa100dadd Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Wed, 19 Nov 2014 23:21:37 +0700
+Subject: [PATCH 1/2] i9082: HACK: add cortex-a9 mcpu flag
+
+(waiting for CM patch to include all flags)
+
+Change-Id: If52acb8345f7d1d29589df1d0718b3f8caf945c6
+---
+ core/combo/arch/arm/armv7-a-neon.mk | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/core/combo/arch/arm/armv7-a-neon.mk b/core/combo/arch/arm/armv7-a-neon.mk
+index a7185f0..baed1a8 100644
+--- a/core/combo/arch/arm/armv7-a-neon.mk
++++ b/core/combo/arch/arm/armv7-a-neon.mk
+@@ -20,6 +20,10 @@ endif
+ endif
+ endif
+ 
++ifeq ($(strip $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT)),cortex-a9)
++	arch_variant_cflags := -mcpu=cortex-a9
++endif
++
+ arch_variant_cflags += \
+     -mfloat-abi=softfp \
+     -mfpu=neon
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 45b1f8e2e92115d7741fddde6807827e6bd1b89e Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Wed, 19 Nov 2014 23:22:41 +0700
+Subject: [PATCH 2/2] i9082: HACK: don't mount/unmount /data
+
+They should be already mounted. If loaded via sideload, then just
+skip checking. Better than displaying a confusing error message.
+
+(waiting for CM patch to properly fix this)
+
+Change-Id: I4a22485d315cf91e95ce578907c49f5fa3a03222
+---
+ tools/releasetools/ota_from_target_files | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/releasetools/ota_from_target_files b/tools/releasetools/ota_from_target_files
+index d3787d2..e90c70c 100755
+--- a/tools/releasetools/ota_from_target_files
++++ b/tools/releasetools/ota_from_target_files
+@@ -589,9 +589,9 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
+   if block_based:
+     common.ZipWriteStr(output_zip, "system/bin/otasigcheck.sh",
+                    ""+input_zip.read("SYSTEM/bin/otasigcheck.sh"))
+-  script.Mount("/data")
++  #script.Mount("/data")
+   script.ValidateSignatures("data")
+-  script.Unmount("/data")
++  #script.Unmount("/data")
+ 
+   if "selinux_fc" in OPTIONS.info_dict:
+     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
+-- 
+1.9.3 (Apple Git-50)
+

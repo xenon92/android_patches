@@ -1,0 +1,28 @@
+From 6ec05ef5277a8f57e3c22c1741ae7b24cc8acc27 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 16 Nov 2014 14:35:29 +0700
+Subject: [PATCH] HACK: i9082: disable libwifi-hal-bcm
+
+Crashes on boot (due to module?)
+
+Change-Id: Ia0a6d038013e43d5816f70e92b45092fec17bcee
+---
+ service/Android.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/service/Android.mk b/service/Android.mk
+index 5ef6a44..33312fe 100644
+--- a/service/Android.mk
++++ b/service/Android.mk
+@@ -43,7 +43,7 @@ include $(BUILD_STATIC_LIBRARY)
+ LIB_WIFI_HAL := libwifi-hal
+ 
+ ifeq ($(BOARD_WLAN_DEVICE), bcmdhd)
+-  LIB_WIFI_HAL := libwifi-hal-bcm
++  #LIB_WIFI_HAL := libwifi-hal-bcm
+ else ifeq ($(BOARD_WLAN_DEVICE), qcwcn)
+   LIB_WIFI_HAL := libwifi-hal-qcom
+ else ifeq ($(BOARD_WLAN_DEVICE), mrvl)
+-- 
+1.9.3 (Apple Git-50)
+

@@ -1,0 +1,118 @@
+From 24e9833d1e600dada0aa4b85be99930c67e873d3 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Fri, 12 Apr 2013 11:40:15 +0700
+Subject: [PATCH 1/3] libnetutils: add ifc_set_mtu
+
+Change-Id: I3031e9ee38583648350f2c46baa7a9a714b9ea1e
+---
+ libnetutils/ifc_utils.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/libnetutils/ifc_utils.c b/libnetutils/ifc_utils.c
+index 913f51e..e726339 100644
+--- a/libnetutils/ifc_utils.c
++++ b/libnetutils/ifc_utils.c
+@@ -702,3 +702,19 @@ ifc_configure(const char *ifname,
+ 
+     return 0;
+ }
++
++// Required for Broadcom RILD
++int ifc_set_mtu(const char *name, int mtuSz)
++{
++    struct ifreq ifr;
++    int ret;
++    ifc_init_ifr(name, &ifr);
++    ifr.ifr_mtu = mtuSz;
++
++    ret = ioctl(ifc_ctl_sock, SIOCSIFMTU, &ifr);
++    if (ret < 0) {
++        printerr("ifc_set_mtu: SIOCSIFMTU failed: %d\n", ret);
++    }
++
++    return ret;
++}
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 031c6070d83ec5f6cbd39773fa72e3efb04d1263 Mon Sep 17 00:00:00 2001
+From: codeworkx <codeworkx@cyanogenmod.org>
+Date: Sat, 27 Jul 2013 08:18:42 +0200
+Subject: [PATCH 2/3] libutils: refbase: jellybean mr1 compat
+
+Change-Id: Ideee0c3814a17b47f70fd612d27067fe19ae698d
+---
+ include/utils/RefBase.h | 9 +++++++++
+ libutils/RefBase.cpp    | 7 +++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/include/utils/RefBase.h b/include/utils/RefBase.h
+index 8e15c19..a45a829 100644
+--- a/include/utils/RefBase.h
++++ b/include/utils/RefBase.h
+@@ -53,6 +53,15 @@ inline bool operator _op_ (const U* o) const {                  \
+ 
+ // ---------------------------------------------------------------------------
+ 
++/* START JB MR1 COMPAT */
++class ReferenceConverterBase {
++public:
++    virtual size_t getReferenceTypeSize() const = 0;
++    virtual void* getReferenceBase(void const*) const = 0;
++    inline virtual ~ReferenceConverterBase() { }
++};
++/* END JB MR1 COMPAT */
++
+ class ReferenceRenamer {
+ protected:
+     // destructor is purposedly not virtual so we avoid code overhead from
+diff --git a/libutils/RefBase.cpp b/libutils/RefBase.cpp
+index 02907ad..c16a2d9 100644
+--- a/libutils/RefBase.cpp
++++ b/libutils/RefBase.cpp
+@@ -630,6 +630,13 @@ void RefBase::onLastWeakRef(const void* /*id*/)
+ 
+ // ---------------------------------------------------------------------------
+ 
++/* START JB MR1 COMPAT */
++extern "C" void _ZN7android7RefBase14moveReferencesEPvPKvjRKNS_22ReferenceConverterBaseE(
++        void* /*dst*/, void const* /*src*/, size_t /*n*/, const ReferenceConverterBase& /*caster*/)
++{
++}
++/* END JB MR1 COMPAT */
++
+ #if DEBUG_REFS
+ void RefBase::renameRefs(size_t n, const ReferenceRenamer& renamer) {
+     for (size_t i=0 ; i<n ; i++) {
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 857568bf32f3d09eb15f69d26c67610c1746165c Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 16 Nov 2014 14:36:25 +0700
+Subject: [PATCH 3/3] HACK: i9082: force SELinux permissive
+
+We can't do it from BoardConfig because bootloader overrides parameters
+
+Change-Id: I91b6fd904f98625fffd40f9877cfca77d79797c6
+---
+ init/init.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/init/init.c b/init/init.c
+index 163fba4..cb3a27d 100644
+--- a/init/init.c
++++ b/init/init.c
+@@ -919,6 +919,7 @@ static bool selinux_is_disabled(void)
+ 
+ static bool selinux_is_enforcing(void)
+ {
++    return false;
+ #ifdef ALLOW_DISABLE_SELINUX
+     char tmp[PROP_VALUE_MAX];
+ 
+-- 
+1.9.3 (Apple Git-50)
+

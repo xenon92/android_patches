@@ -1,0 +1,214 @@
+From 656e4bfb1b9301458b8385d5392225305d471a18 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sat, 15 Nov 2014 14:47:35 +0700
+Subject: [PATCH 1/4] frameworks: base: add KEYCODE_HOME to wake keys
+
+Change-Id: I77d70df2263dd9c75b02efde18d91585b1ad29f9
+---
+ core/java/android/view/KeyEvent.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/core/java/android/view/KeyEvent.java b/core/java/android/view/KeyEvent.java
+index 0701b53..f7939a9 100644
+--- a/core/java/android/view/KeyEvent.java
++++ b/core/java/android/view/KeyEvent.java
+@@ -1809,6 +1809,7 @@ public class KeyEvent extends InputEvent implements Parcelable {
+             case KeyEvent.KEYCODE_SLEEP:
+             case KeyEvent.KEYCODE_WAKEUP:
+             case KeyEvent.KEYCODE_PAIRING:
++            case KeyEvent.KEYCODE_HOME:
+                 return true;
+         }
+         return false;
+-- 
+1.9.3 (Apple Git-50)
+
+
+From a07ba2d7a960aa26108ba06c1ab7b490055c73ce Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sat, 15 Nov 2014 14:50:29 +0700
+Subject: [PATCH 2/4] TelephonyManager: set properties in Broadcom-style as
+ expected by RIL
+
+For i9082
+
+Change-Id: I475fdd164b3316720387fefb14a3e12fbc262b39
+---
+ .../java/android/telephony/TelephonyManager.java   | 69 +++++++---------------
+ 1 file changed, 20 insertions(+), 49 deletions(-)
+
+diff --git a/telephony/java/android/telephony/TelephonyManager.java b/telephony/java/android/telephony/TelephonyManager.java
+index 12b65f1..32508ff 100644
+--- a/telephony/java/android/telephony/TelephonyManager.java
++++ b/telephony/java/android/telephony/TelephonyManager.java
+@@ -2729,44 +2729,16 @@ public class TelephonyManager {
+      * @hide
+      */
+     public static void setTelephonyProperty(String property, long subId, String value) {
+-        String propVal = "";
+-        String p[] = null;
+-        String prop = SystemProperties.get(property);
+         int phoneId = SubscriptionManager.getPhoneId(subId);
+ 
+-        if (value == null) {
+-            value = "";
+-        }
+-
+-        if (prop != null) {
+-            p = prop.split(",");
+-        }
+-
+-        if (phoneId < 0) return;
+-
+-        for (int i = 0; i < phoneId; i++) {
+-            String str = "";
+-            if ((p != null) && (i < p.length)) {
+-                str = p[i];
+-            }
+-            propVal = propVal + str + ",";
+-        }
+-
+-        propVal = propVal + value;
+-        if (p != null) {
+-            for (int i = phoneId + 1; i < p.length; i++) {
+-                propVal = propVal + "," + p[i];
+-            }
+-        }
+-
+-        // TODO: workaround for QC
+-        if (property.length() > SystemProperties.PROP_NAME_MAX || propVal.length() > SystemProperties.PROP_VALUE_MAX) {
+-            Rlog.d(TAG, "setTelephonyProperty length too long:" + property + ", " + propVal);
++        if (phoneId < 0) {
+             return;
++        } else if (phoneId > 0) {
++            property += "_" + phoneId;
+         }
+ 
+-        Rlog.d(TAG, "setTelephonyProperty property=" + property + " propVal=" + propVal);
+-        SystemProperties.set(property, propVal);
++        Rlog.d(TAG, "setTelephonyProperty property=" + property + " propVal=" + value);
++        SystemProperties.set(property, value);
+     }
+ 
+     /**
+@@ -2857,16 +2829,16 @@ public class TelephonyManager {
+      * @hide
+      */
+     public static String getTelephonyProperty(String property, long subId, String defaultVal) {
+-        String propVal = null;
+         int phoneId = SubscriptionManager.getPhoneId(subId);
+-        String prop = SystemProperties.get(property);
+-        if ((prop != null) && (prop.length() > 0)) {
+-            String values[] = prop.split(",");
+-            if ((phoneId >= 0) && (phoneId < values.length) && (values[phoneId] != null)) {
+-                propVal = values[phoneId];
+-            }
++
++        if (phoneId < 0) {
++            return defaultVal;
++        } else if (phoneId > 0) {
++            property += "_" + phoneId;
+         }
+-        return propVal == null ? defaultVal : propVal;
++
++        String propVal = SystemProperties.get(property);
++        return propVal.isEmpty() ? defaultVal : propVal;
+     }
+ 
+     /**
+@@ -2875,15 +2847,14 @@ public class TelephonyManager {
+      * @hide
+      */
+     public static int getTelephonyProperty(String property, int slotId, int defaultVal) {
+-        String propVal = null;
+-        String prop = SystemProperties.get(property);
+-        if ((prop != null) && (prop.length() > 0)) {
+-            String values[] = prop.split(",");
+-            if ((slotId >= 0) && (slotId < values.length) && (values[slotId] != null)) {
+-                propVal = values[slotId];
+-            }
++        if (slotId < 0) {
++            return defaultVal;
++        } else if (slotId > 0) {
++            property += "_" + slotId;
+         }
+-        return propVal == null ? defaultVal : Integer.parseInt(propVal);
++
++        String propVal = SystemProperties.get(property);
++        return propVal.isEmpty() ? defaultVal : Integer.parseInt(propVal);
+     }
+ 
+     /** @hide */
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 2bd3af11df36cea109d14fde5b0a2b2ed3ffe9c2 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sat, 15 Nov 2014 22:33:16 +0700
+Subject: [PATCH 3/4] Camera: HACK: i9082: default to a supporting antibanding
+ mode
+
+The default value doesn't get checked later and will crash the camera HAL
+
+Change-Id: I929feffa4f79c69e9d7be7d1acacb3c228280bfe
+---
+ core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java b/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
+index 03540e1..9f47b9c 100644
+--- a/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
++++ b/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
+@@ -1208,7 +1208,7 @@ public class LegacyMetadataMapper {
+         // AWB is always unconditionally available in API1 devices
+ 
+         // control.aeAntibandingMode
+-        m.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, CONTROL_AE_ANTIBANDING_MODE_AUTO);
++        m.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, CONTROL_AE_ANTIBANDING_MODE_50HZ);
+ 
+         // control.aeExposureCompensation
+         m.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, 0);
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 9aded071f544bb8ac89b77ecb1feb89d077141f2 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Thu, 20 Nov 2014 11:26:26 +0000
+Subject: [PATCH 4/4] Revert "SystemUI: Fix mobile data connection type hiding"
+
+This reverts commit b2aac59c634158f0e3d78f41d36b89c5ab3bbfe2.
+
+This is intentional and is only displayed when 2 connections
+are connected at the same time.
+
+E.g.  If you're connected to Wi-Fi with a captive portal, then
+3G will remain connected and normal data connectivity will go
+through 3G until you have logged in via Wi-Fi.
+
+In that case, the correct display is Wi-Fi with "!" and mobile
+with "3G".
+
+Change-Id: I985c361a656d15b145e467542508dcef41f92df5
+---
+ .../SystemUI/src/com/android/systemui/statusbar/SignalClusterView.java | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/SignalClusterView.java b/packages/SystemUI/src/com/android/systemui/statusbar/SignalClusterView.java
+index da17ddc..6a8f7aa 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/SignalClusterView.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/SignalClusterView.java
+@@ -402,8 +402,7 @@ public class SignalClusterView
+ 
+         if (mStyle == STATUS_BAR_STYLE_ANDROID_DEFAULT) {
+             mMobileType.setVisibility(
+-                    ((mRoaming || mMobileTypeId != 0) && !mWifiVisible) ?
+-                    View.VISIBLE : View.GONE);
++                    (mRoaming || mMobileTypeId != 0) ? View.VISIBLE : View.GONE);
+         } else {
+             mMobileType.setVisibility(View.GONE);
+         }
+-- 
+1.9.3 (Apple Git-50)
+
