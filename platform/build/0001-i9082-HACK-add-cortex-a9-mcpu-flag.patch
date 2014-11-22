@@ -1,0 +1,28 @@
+From 83f5d8d44a57a91a784f23db15ce02e9e99a6847 Mon Sep 17 00:00:00 2001
+From: Shubhang Rathore <shubhang92@gmail.com>
+Date: Sat, 22 Nov 2014 18:06:59 +0530
+Subject: [PATCH] i9082: HACK: add cortex-a9 mcpu flag
+
+Change-Id: I6a9776559eaedbd013ab158e0a39f0b118d70df7
+---
+ core/combo/arch/arm/armv7-a-neon.mk | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/core/combo/arch/arm/armv7-a-neon.mk b/core/combo/arch/arm/armv7-a-neon.mk
+index a7185f0..baed1a8 100644
+--- a/core/combo/arch/arm/armv7-a-neon.mk
++++ b/core/combo/arch/arm/armv7-a-neon.mk
+@@ -20,6 +20,10 @@ endif
+ endif
+ endif
+ 
++ifeq ($(strip $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT)),cortex-a9)
++	arch_variant_cflags := -mcpu=cortex-a9
++endif
++
+ arch_variant_cflags += \
+     -mfloat-abi=softfp \
+     -mfpu=neon
+-- 
+1.9.1
+
