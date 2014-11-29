@@ -1,7 +1,39 @@
-From 8d4571d016725fcd81654047613180625b1dbe62 Mon Sep 17 00:00:00 2001
+From da88b6394ea1a21d126165fe161ae3ef2d4a938a Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 23 Nov 2014 14:23:23 +0700
+Subject: [PATCH 1/3] SubscriptionController: do not return info for invalid
+ slot id
+
+This causes Keyguard to crash when you switch a dual SIM phone into
+single SIM mode for testing because the old data with the now-invalid
+slotId is stored in the database.
+
+Change-Id: I9d6102f94c11b808c272111230322507408b2d87
+---
+ src/java/com/android/internal/telephony/SubscriptionController.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/java/com/android/internal/telephony/SubscriptionController.java b/src/java/com/android/internal/telephony/SubscriptionController.java
+index 930d2af..34e8d7c 100644
+--- a/src/java/com/android/internal/telephony/SubscriptionController.java
++++ b/src/java/com/android/internal/telephony/SubscriptionController.java
+@@ -367,7 +367,7 @@ public class SubscriptionController extends ISub.Stub {
+             if (cursor != null) {
+                 while (cursor.moveToNext()) {
+                     SubInfoRecord subInfo = getSubInfoRecord(cursor);
+-                    if (subInfo != null)
++                    if (subInfo != null && SubscriptionManager.isValidSlotId(subInfo.slotId))
+                     {
+                         if (subList == null)
+                         {
+-- 
+1.9.3 (Apple Git-50)
+
+
+From bbf6c1d525df970e38414ef9925163e938f2edcc Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 31 May 2014 12:34:56 +0700
-Subject: [PATCH 1/2] telephony: support for RIL that does not send
+Subject: [PATCH 2/3] telephony: support for RIL that does not send
  UNSOL_CALL_RING
 
 Samsung Broadcom RIL does not send UNSOL_CALL_RING at all, so it
@@ -68,10 +100,10 @@ index a021997..67053bd 100644
 1.9.3 (Apple Git-50)
 
 
-From 4d280be4a8d4d791b38b5ee1732beb9755de7482 Mon Sep 17 00:00:00 2001
+From 48aa747261d92ef3495a69a70b0bdc5815e79b27 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 17:39:50 +0700
-Subject: [PATCH 2/2] telephony: RIL: i9082: set correct rild names
+Subject: [PATCH 3/3] telephony: RIL: i9082: set correct rild names
 
 Change-Id: Idf8e98ae2f36f30b84be04b7b062ca4b52cebd8a
 ---

@@ -1,7 +1,7 @@
-From 1f4baa381ea6dcd96712864fbeb6bd3beb3521f4 Mon Sep 17 00:00:00 2001
+From 481d0a88f0169d94122243da21f35ba1e0460a9a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 24 Apr 2013 11:37:19 +0700
-Subject: [PATCH 1/3] OMXCodec: Re-implement requires-flush-before-shutdown
+Subject: [PATCH 1/5] OMXCodec: Re-implement requires-flush-before-shutdown
  quirk
 
 Support is already there, but is not in the codec quirk reading list.
@@ -13,10 +13,10 @@ Change-Id: I1beac06af8118dcf0c248b631bc8e6dbbab2c1d5
  1 file changed, 3 insertions(+)
 
 diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
-index f893a0e..fbd97ee 100644
+index 9b78e9c..bb5f0ab 100644
 --- a/media/libstagefright/OMXCodec.cpp
 +++ b/media/libstagefright/OMXCodec.cpp
-@@ -317,6 +317,9 @@ uint32_t OMXCodec::getComponentQuirks(
+@@ -331,6 +331,9 @@ uint32_t OMXCodec::getComponentQuirks(
      if (info->hasQuirk("output-buffers-are-unreadable")) {
          quirks |= kOutputBuffersAreUnreadable;
      }
@@ -30,10 +30,10 @@ index f893a0e..fbd97ee 100644
 1.9.3 (Apple Git-50)
 
 
-From b142073b835bebe66cc2f2e1777603edeec33ec3 Mon Sep 17 00:00:00 2001
+From 38f53ad53fb13745baf2196d238ea38ef904a96a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 17 Dec 2013 13:15:52 +0700
-Subject: [PATCH 2/3] OMXCodec: set default input buffer size
+Subject: [PATCH 2/5] OMXCodec: set default input buffer size
 
 Broadcom OMX only set the buffer size to 65536 by default which
 is not enough for higher bitrate video
@@ -47,10 +47,10 @@ Change-Id: I74372f3d821e41feb38b9bc0cca4ef56aa019493
  2 files changed, 25 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index cd238a9..32370bc 100755
+index 2f4c362..8239153 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -1599,6 +1599,19 @@ status_t ACodec::configureCodec(
+@@ -1643,6 +1643,19 @@ status_t ACodec::configureCodec(
      } else if (!strcmp("OMX.Nvidia.aac.decoder", mComponentName.c_str())) {
          err = setMinBufferSize(kPortIndexInput, 8192);  // XXX
      }
@@ -71,10 +71,10 @@ index cd238a9..32370bc 100755
      CHECK_EQ(getPortFormat(kPortIndexInput, inputFormat), (status_t)OK);
      CHECK_EQ(getPortFormat(kPortIndexOutput, outputFormat), (status_t)OK);
 diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
-index fbd97ee..7f8773a 100644
+index bb5f0ab..19dca24 100644
 --- a/media/libstagefright/OMXCodec.cpp
 +++ b/media/libstagefright/OMXCodec.cpp
-@@ -793,6 +793,18 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
+@@ -833,6 +833,18 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
      if (meta->findInt32(kKeyMaxInputSize, &maxInputSize)) {
          setMinBufferSize(kPortIndexInput, (OMX_U32)maxInputSize);
      }
@@ -97,10 +97,10 @@ index fbd97ee..7f8773a 100644
 1.9.3 (Apple Git-50)
 
 
-From a61d90278e4145b6e8ac2ca44cc0df5f31e65727 Mon Sep 17 00:00:00 2001
+From 5f4ed1d9598a3f514e0d7956d28c84a717f0da05 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 19 Nov 2014 20:33:58 +0700
-Subject: [PATCH 3/3] ACodec: skip port index checking on vc4 encoder
+Subject: [PATCH 3/5] ACodec: skip port index checking on vc4 encoder
 
 Change-Id: I3fe742a8ec4b7f9bc0c4e5f0825fd3b88965a95e
 ---
@@ -108,10 +108,10 @@ Change-Id: I3fe742a8ec4b7f9bc0c4e5f0825fd3b88965a95e
  1 file changed, 5 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 32370bc..cc0d515 100755
+index 8239153..b50099b 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -3275,6 +3275,11 @@ status_t ACodec::getPortFormat(OMX_U32 portIndex, sp<AMessage> &notify) {
+@@ -3336,6 +3336,11 @@ status_t ACodec::getPortFormat(OMX_U32 portIndex, sp<AMessage> &notify) {
                  mNode, OMX_IndexParamPortDefinition, &def, sizeof(def)),
               (status_t)OK);
  
@@ -123,6 +123,79 @@ index 32370bc..cc0d515 100755
      CHECK_EQ((int)def.eDir,
              (int)(portIndex == kPortIndexOutput ? OMX_DirOutput : OMX_DirInput));
  
+-- 
+1.9.3 (Apple Git-50)
+
+
+From a38222db522a9178870c0b256e48822b2eac77bf Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 23 Nov 2014 17:27:20 +0700
+Subject: [PATCH 4/5] ACodec: Don't trust provided width/height when setting
+ input buffer size
+
+They are bogus
+
+Change-Id: I202b291a84d2f9a8c29aa2177ba52a0465f39deb
+---
+ media/libstagefright/ACodec.cpp | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
+index b50099b..57964bd 100644
+--- a/media/libstagefright/ACodec.cpp
++++ b/media/libstagefright/ACodec.cpp
+@@ -1646,13 +1646,9 @@ status_t ACodec::configureCodec(
+ // Capri's OMX fail to set a reasonable default size from width and height
+ #ifdef CAPRI_HWC
+     else if (!strncmp(mComponentName.c_str(), "OMX.BRCM.vc4.decoder.", 21)) {
+-        int32_t width;
+-        int32_t height;
+-        if (msg->findInt32("width", &width) && msg->findInt32("height", &height)) {
+-            setMinBufferSize(kPortIndexInput, (width * height * 3) / 2);
+-        } else {
+-            ALOGE("Failed to set min buffer size");
+-        }
++        // We cannot trust the width/height from the message
++        // so just use 1920x1080
++        setMinBufferSize(kPortIndexInput, (1920 * 1080 * 3) / 2);
+     }
+ #endif
+ 
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 0ee9f477bf547476c9efc392ab3e3af7e03102db Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Fri, 28 Nov 2014 21:07:59 +0700
+Subject: [PATCH 5/5] AudioFlinger: i9082: HACK: disable stereo record
+
+Stereo record causes audio to speed up x2 for some reason.
+Record in mono and let AudioFlinger resample to stereo
+(we only have one mic anyway)
+
+Change-Id: I59236addc022186fa35bd3b3914f42709c2318de
+---
+ services/audioflinger/AudioFlinger.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/services/audioflinger/AudioFlinger.cpp b/services/audioflinger/AudioFlinger.cpp
+index 25a77d0..3881994 100644
+--- a/services/audioflinger/AudioFlinger.cpp
++++ b/services/audioflinger/AudioFlinger.cpp
+@@ -2234,6 +2234,12 @@ sp<AudioFlinger::RecordThread> AudioFlinger::openInput_l(audio_module_handle_t m
+     audio_config_t halconfig = *config;
+     audio_hw_device_t *inHwHal = inHwDev->hwDevice();
+     audio_stream_in_t *inStream = NULL;
++
++#ifdef CAPRI_HWC
++    ALOGD("Forcing channel mask to mono on capri");
++    halconfig.channel_mask = AUDIO_CHANNEL_IN_MONO;
++#endif
++
+     status_t status = inHwHal->open_input_stream(inHwHal, *input, device, &halconfig,
+                                         &inStream, flags, address.string(), source);
+     ALOGV("openInput_l() openInputStream returned input %p, SamplingRate %d"
 -- 
 1.9.3 (Apple Git-50)
 
