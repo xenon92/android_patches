@@ -1,0 +1,41 @@
+From 08d7a69058818162de69140b50f761ee842ee04f Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Thu, 27 Nov 2014 20:18:18 +0700
+Subject: [PATCH] vendor: add policies for netd
+
+Required due to CAF's abc9c0f4fe574ee9847f118e5d2ae8c530bac650 in
+system/netd
+
+Fixes showing how many devices are connected to the tethered hotspot
+
+Change-Id: I1d83f7ac0b28efa6973e0baf429de2a398c471e3
+---
+ sepolicy/netd.te   | 5 +++++
+ sepolicy/system.te | 2 ++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/sepolicy/netd.te b/sepolicy/netd.te
+index 4ad0b3e..57e4941 100644
+--- a/sepolicy/netd.te
++++ b/sepolicy/netd.te
+@@ -2,3 +2,8 @@ allow netd self:capability { setuid sys_module setgid };
+ allow netd self:packet_socket create_socket_perms;
+ allow netd radio_data_file:dir rw_dir_perms;
+ allow netd radio_data_file:file create_file_perms;
++allow netd wpa_socket:dir rw_dir_perms;
++allow netd wpa_socket:sock_file create_file_perms;
++allow netd system_wpa_socket:sock_file create_file_perms;
++allow netd hostapd:unix_dgram_socket sendto;
++allow hostapd netd:unix_dgram_socket sendto;
+diff --git a/sepolicy/system.te b/sepolicy/system.te
+index 01972d4..65db574 100644
+--- a/sepolicy/system.te
++++ b/sepolicy/system.te
+@@ -1,2 +1,4 @@
+ allow system_server wallpaper_file:file relabelto;
+ allow system_server dalvikcache_data_file:file write;
++allow system_server dhcp_data_file:dir r_dir_perms;
++allow system_server dhcp_data_file:file r_file_perms;
+-- 
+1.9.3 (Apple Git-50)
+

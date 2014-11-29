@@ -1,7 +1,205 @@
-From 656e4bfb1b9301458b8385d5392225305d471a18 Mon Sep 17 00:00:00 2001
+From 0364bf81b68aa8d4aaf92aa0b59f6a7d1eadbc5f Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Fri, 28 Nov 2014 20:24:02 +0700
+Subject: [PATCH 1/5] KeyguardSimPinView: don't send dummy request to get
+ remaining pin
+
+I'm not sure of the behavior on QCOM RILs, but on Broadcom RIL
+(and probably other RILs), this will eat into the user's PIN
+remaining tries. Given that the user is only given ~3 tries, this
+is a very bad idea.
+
+In addition, if onAttachedToWindow is called multiple times before
+the RIL replies, this can completely delete the retry quota leading
+straight to the PUK screen.
+
+Change-Id: I339f1b6d79d543ae8930a7bb95acf823fd5ae20e
+---
+ .../src/com/android/keyguard/KeyguardSimPinView.java       | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
+
+diff --git a/packages/Keyguard/src/com/android/keyguard/KeyguardSimPinView.java b/packages/Keyguard/src/com/android/keyguard/KeyguardSimPinView.java
+index 30c8330..7b2857a 100644
+--- a/packages/Keyguard/src/com/android/keyguard/KeyguardSimPinView.java
++++ b/packages/Keyguard/src/com/android/keyguard/KeyguardSimPinView.java
+@@ -388,19 +388,9 @@ public class KeyguardSimPinView extends KeyguardPinBasedInputView {
+             mSecurityMessageDisplay.setMessage(getPinPasswordErrorMessage(
+                     mRemainingAttempts, true), true);
+             return;
++        } else {
++            mSecurityMessageDisplay.setMessage(R.string.kg_sim_pin_instructions, true);
+         }
+-        mSecurityMessageDisplay.setMessage(R.string.kg_sim_pin_instructions, true);
+-        new CheckSimPin("") {
+-            void onSimCheckResponse(final int result, final int attemptsRemaining) {
+-                Log.d(LOG_TAG, "onSimCheckResponse " + " dummy One result" + result +
+-                        " attemptsRemaining=" + attemptsRemaining);
+-                if (attemptsRemaining >= 0) {
+-                    mRemainingAttempts = attemptsRemaining;
+-                    mSecurityMessageDisplay.setMessage(
+-                            getPinPasswordErrorMessage(attemptsRemaining, true), true);
+-                }
+-            }
+-        }.start();
+     }
+ }
+ 
+-- 
+1.9.3 (Apple Git-50)
+
+
+From cf75f86c056ccb82e0d3cae720a2dbf53c088441 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 23 Nov 2014 13:50:23 +0700
+Subject: [PATCH 2/5] SystemUI: kill MSim logspew
+
+Change-Id: I64ce4e61402d43d4d12ef6a80a9cb42b2fb2979a
+---
+ .../systemui/statusbar/MSimSignalClusterView.java  |  2 +-
+ .../policy/MSimNetworkControllerImpl.java          | 36 ++++++++++++----------
+ 2 files changed, 20 insertions(+), 18 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/MSimSignalClusterView.java b/packages/SystemUI/src/com/android/systemui/statusbar/MSimSignalClusterView.java
+index e273021..e25b174 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/MSimSignalClusterView.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/MSimSignalClusterView.java
+@@ -45,7 +45,7 @@ public class MSimSignalClusterView
+         extends LinearLayout
+         implements MSimNetworkControllerImpl.MSimSignalCluster {
+ 
+-    static final boolean DEBUG = true;
++    static final boolean DEBUG = false;
+     static final String TAG = "MSimSignalClusterView";
+ 
+     private final int STATUS_BAR_STYLE_ANDROID_DEFAULT = 0;
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MSimNetworkControllerImpl.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MSimNetworkControllerImpl.java
+index 08de53e..6afb1ef 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MSimNetworkControllerImpl.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MSimNetworkControllerImpl.java
+@@ -273,7 +273,7 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
+     private int getPhoneId(long subId) {
+         int phoneId;
+         phoneId = SubscriptionManager.getPhoneId(subId);
+-        Slog.d(TAG, "getPhoneId phoneId: " +phoneId);
++        if (DEBUG) Slog.d(TAG, "getPhoneId phoneId: " +phoneId);
+         return phoneId;
+     }
+ 
+@@ -697,7 +697,7 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
+     }
+ 
+     private final void updateTelephonySignalStrength(int phoneId) {
+-        Slog.d(TAG, "updateTelephonySignalStrength: phoneId =" + phoneId);
++        if (DEBUG) Slog.d(TAG, "updateTelephonySignalStrength: phoneId =" + phoneId);
+         int dataSub = SubscriptionManager.getPhoneId(
+                 SubscriptionManager.getDefaultDataSubId());
+         if ((!hasService(phoneId) &&
+@@ -854,18 +854,18 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
+     }
+ 
+     private void updateIconSet(int phoneId) {
+-        Slog.d(TAG, "updateIconSet, phoneId = " + phoneId);
++        if (DEBUG) Slog.d(TAG, "updateIconSet, phoneId = " + phoneId);
+         int voiceNetorkType = mMSimServiceState[phoneId].getVoiceNetworkType();
+         int dataNetorkType =  mMSimServiceState[phoneId].getDataNetworkType();
+-        Slog.d(TAG, "updateIconSet, voice network type is: " + voiceNetorkType
++
++        if (DEBUG) Slog.d(TAG, "updateIconSet, voice network type is: " + voiceNetorkType
+             + "/" + TelephonyManager.getNetworkTypeName(voiceNetorkType)
+             + ", data network type is: " + dataNetorkType
+             + "/" + TelephonyManager.getNetworkTypeName(dataNetorkType));
+-
+         int chosenNetworkType = ((dataNetorkType == TelephonyManager.NETWORK_TYPE_UNKNOWN)
+                     ? voiceNetorkType : dataNetorkType);
+ 
+-        Slog.d(TAG, "updateIconSet, chosenNetworkType=" + chosenNetworkType
++        if (DEBUG) Slog.d(TAG, "updateIconSet, chosenNetworkType=" + chosenNetworkType
+             + " hspaDataDistinguishable=" + String.valueOf(mHspaDataDistinguishable)
+             + " hspapDistinguishable=" + "false"
+             + " showAtLeastThreeGees=" + String.valueOf(mShowAtLeastThreeGees));
+@@ -875,27 +875,27 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
+     }
+ 
+     private final void updateDataIcon(int phoneId) {
+-        Slog.d(TAG,"updateDataIcon phoneId =" + phoneId);
++        if (DEBUG) Slog.d(TAG,"updateDataIcon phoneId =" + phoneId);
+         int iconId = 0;
+         boolean visible = true;
+         int dataSub = SubscriptionManager.getPhoneId(
+                 SubscriptionManager.getDefaultDataSubId());
+ 
+-        Slog.d(TAG,"updateDataIcon dataSub =" + dataSub);
++        if (DEBUG) Slog.d(TAG,"updateDataIcon dataSub =" + dataSub);
+         // DSDS case: Data is active only on DDS. Clear the icon for NON-DDS
+         if (phoneId != dataSub) {
+             mMSimDataConnected[phoneId] = false;
+-            Slog.d(TAG,"updateDataIconi: phoneId" + phoneId
++            if (DEBUG) Slog.d(TAG,"updateDataIconi: phoneId" + phoneId
+                      + " is not DDS.  Clear the mMSimDataConnected Flag and return");
+             return;
+         }
+ 
+-        Slog.d(TAG,"updateDataIcon  when SimState =" + mMSimState[phoneId]);
++        if (DEBUG) Slog.d(TAG,"updateDataIcon  when SimState =" + mMSimState[phoneId]);
+         if (mDataNetType == TelephonyManager.NETWORK_TYPE_UNKNOWN) {
+             // If data network type is unknown do not display data icon
+             visible = false;
+         } else if (!isCdma(phoneId)) {
+-             Slog.d(TAG,"updateDataIcon  when gsm mMSimState =" + mMSimState[phoneId]);
++            if (DEBUG) Slog.d(TAG,"updateDataIcon  when gsm mMSimState =" + mMSimState[phoneId]);
+             // GSM case, we have to check also the sim state
+             if (mMSimState[phoneId] == IccCardConstants.State.READY ||
+                 mMSimState[phoneId] == IccCardConstants.State.UNKNOWN) {
+@@ -908,7 +908,7 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
+                     visible = false;
+                 }
+             } else {
+-                Slog.d(TAG,"updateDataIcon when no sim");
++                if (DEBUG) Slog.d(TAG,"updateDataIcon when no sim");
+                 mNoSim = true;
+                 iconId = TelephonyIcons.getNoSimIcon();
+                 visible = false; // no SIM? no data
+@@ -928,7 +928,7 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
+         mMSimDataConnected[phoneId] = visible;
+         mDataConnected = visible;
+ 
+-        Slog.d(TAG,"updateDataIcon when mMSimDataConnected[" + phoneId + "] ="
++        if (DEBUG) Slog.d(TAG,"updateDataIcon when mMSimDataConnected[" + phoneId + "] ="
+             + mMSimDataConnected[phoneId]
+             + " mMSimMobileActivityIconId[" + phoneId +"] = "
+             + mMSimMobileActivityIconId[phoneId]);
+@@ -1031,9 +1031,11 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
+         String mobileLabel = "";
+         String wifiLabel = "";
+         int N;
+-        Slog.d(TAG,"refreshViews phoneId =" + phoneId + "mMSimDataConnected ="
+-                + mMSimDataConnected[phoneId]);
+-        Slog.d(TAG,"refreshViews mMSimDataActivity =" + mMSimDataActivity[phoneId]);
++        if (DEBUG) {
++            Slog.d(TAG,"refreshViews phoneId =" + phoneId + "mMSimDataConnected ="
++                    + mMSimDataConnected[phoneId]);
++            Slog.d(TAG,"refreshViews mMSimDataActivity =" + mMSimDataActivity[phoneId]);
++        }
+         int dataSub = SubscriptionManager.getPhoneId(
+                 SubscriptionManager.getDefaultDataSubId());
+         if (!mHasMobileDataFeature) {
+@@ -1186,7 +1188,7 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
+         }
+ 
+         if (!mMSimDataConnected[phoneId]) {
+-            Slog.d(TAG, "refreshViews: Data not connected!! Set no data type icon / Roaming for"
++            if (DEBUG) Slog.d(TAG, "refreshViews: Data not connected!! Set no data type icon / Roaming for"
+                     + " phoneId: " + phoneId);
+             mMSimDataTypeIconId[phoneId] = 0;
+             if (phoneId == dataSub) {
+-- 
+1.9.3 (Apple Git-50)
+
+
+From cb97d3b5c75256029da59b513d559a530854ace2 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:47:35 +0700
-Subject: [PATCH 1/4] frameworks: base: add KEYCODE_HOME to wake keys
+Subject: [PATCH 3/5] frameworks: base: add KEYCODE_HOME to wake keys
 
 Change-Id: I77d70df2263dd9c75b02efde18d91585b1ad29f9
 ---
@@ -24,10 +222,10 @@ index 0701b53..f7939a9 100644
 1.9.3 (Apple Git-50)
 
 
-From a07ba2d7a960aa26108ba06c1ab7b490055c73ce Mon Sep 17 00:00:00 2001
+From f7f62a27f5d3859233b16aac1252a28a60a9283e Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:50:29 +0700
-Subject: [PATCH 2/4] TelephonyManager: set properties in Broadcom-style as
+Subject: [PATCH 4/5] TelephonyManager: set properties in Broadcom-style as
  expected by RIL
 
 For i9082
@@ -143,31 +341,62 @@ index 12b65f1..32508ff 100644
 1.9.3 (Apple Git-50)
 
 
-From 2bd3af11df36cea109d14fde5b0a2b2ed3ffe9c2 Mon Sep 17 00:00:00 2001
+From b6a70cd19972e197b0a637ed34f074f3a0e05c15 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 22:33:16 +0700
-Subject: [PATCH 3/4] Camera: HACK: i9082: default to a supporting antibanding
- mode
+Subject: [PATCH 5/5] Camera: HACK: i9082: API hacks
 
-The default value doesn't get checked later and will crash the camera HAL
+CTS 5.0 requires the presence of an auto mode, so applications
+may try to use auto without checking.
+
+Also change ENODEV to MAX_CAMERAS_IN_USE to please the CTS
 
 Change-Id: I929feffa4f79c69e9d7be7d1acacb3c228280bfe
 ---
  core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ core/java/android/hardware/camera2/legacy/LegacyRequestMapper.java  | 2 +-
+ core/java/android/hardware/camera2/utils/CameraBinderDecorator.java | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java b/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
-index 03540e1..9f47b9c 100644
+index 03540e1..a4555e3 100644
 --- a/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
 +++ b/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
-@@ -1208,7 +1208,7 @@ public class LegacyMetadataMapper {
-         // AWB is always unconditionally available in API1 devices
- 
-         // control.aeAntibandingMode
--        m.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, CONTROL_AE_ANTIBANDING_MODE_AUTO);
-+        m.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, CONTROL_AE_ANTIBANDING_MODE_50HZ);
- 
-         // control.aeExposureCompensation
-         m.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, 0);
+@@ -1100,7 +1100,7 @@ public class LegacyMetadataMapper {
+                 return CONTROL_AE_ANTIBANDING_MODE_OFF;
+             }
+             case Camera.Parameters.ANTIBANDING_50HZ: {
+-                return CONTROL_AE_ANTIBANDING_MODE_50HZ;
++                return /* CONTROL_AE_ANTIBANDING_MODE_50HZ */ CONTROL_AE_ANTIBANDING_MODE_AUTO;
+             }
+             case Camera.Parameters.ANTIBANDING_60HZ: {
+                 return CONTROL_AE_ANTIBANDING_MODE_60HZ;
+diff --git a/core/java/android/hardware/camera2/legacy/LegacyRequestMapper.java b/core/java/android/hardware/camera2/legacy/LegacyRequestMapper.java
+index 61f7b8b..f370103 100644
+--- a/core/java/android/hardware/camera2/legacy/LegacyRequestMapper.java
++++ b/core/java/android/hardware/camera2/legacy/LegacyRequestMapper.java
+@@ -617,7 +617,7 @@ public class LegacyRequestMapper {
+                 return Parameters.ANTIBANDING_60HZ;
+             }
+             case CONTROL_AE_ANTIBANDING_MODE_AUTO: {
+-                return Parameters.ANTIBANDING_AUTO;
++                return Parameters.ANTIBANDING_50HZ /* Parameters.ANTIBANDING_AUTO */;
+             }
+             default: {
+                 return null;
+diff --git a/core/java/android/hardware/camera2/utils/CameraBinderDecorator.java b/core/java/android/hardware/camera2/utils/CameraBinderDecorator.java
+index d461bca..a34a758 100644
+--- a/core/java/android/hardware/camera2/utils/CameraBinderDecorator.java
++++ b/core/java/android/hardware/camera2/utils/CameraBinderDecorator.java
+@@ -124,7 +124,7 @@ public class CameraBinderDecorator {
+             case EUSERS:
+                 throw new CameraRuntimeException(MAX_CAMERAS_IN_USE);
+             case ENODEV:
+-                throw new CameraRuntimeException(CAMERA_DISCONNECTED);
++                throw new CameraRuntimeException(/*CAMERA_DISCONNECTED*/ MAX_CAMERAS_IN_USE);
+             case EOPNOTSUPP:
+                 throw new CameraRuntimeException(CAMERA_DEPRECATED_HAL);
+             case INVALID_OPERATION:
 -- 
 1.9.3 (Apple Git-50)
+

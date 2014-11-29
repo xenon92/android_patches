@@ -1,7 +1,7 @@
-From daf064668bd769df7983256390d4c1c3796bc175 Mon Sep 17 00:00:00 2001
+From f910b480901438f7cfb3764066ada18d2119da7f Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
-Subject: [PATCH 1/5] binder: add compat symbol
+Subject: [PATCH 1/4] binder: add compat symbol
 
 Required for older Samsung libtvout
 
@@ -29,10 +29,10 @@ index dd04dcf..9ec2380 100644
 1.9.3 (Apple Git-50)
 
 
-From 353317db40e2529ca53182d1fa27a199243e7701 Mon Sep 17 00:00:00 2001
+From 574ac831a73018f8e127e085b9880f6320a00c95 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
-Subject: [PATCH 2/5] binder: add compat symbols
+Subject: [PATCH 2/4] binder: add compat symbols
 
 Required for libtvservice_binder.so on I9082
 
@@ -75,11 +75,10 @@ index 1dbb06f..8b36a54 100644
 1.9.3 (Apple Git-50)
 
 
-
-From 6198bfb82d15823127e97e7a687336fa465a61b8 Mon Sep 17 00:00:00 2001
+From 116292c071609cab8acfa64b79d6ed8a428cc67a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
-Subject: [PATCH 5/5] sf: CAPRI_HWC: fix rotation artifact
+Subject: [PATCH 3/4] sf: CAPRI_HWC: fix rotation artifact
 
 ---
  services/surfaceflinger/SurfaceFlinger.cpp | 5 +++++
@@ -101,6 +100,42 @@ index 714a9f6..0dca00b 100644
      // get screen geometry
      const uint32_t hw_w = hw->getWidth();
      const uint32_t hw_h = hw->getHeight();
+-- 
+1.9.3 (Apple Git-50)
+
+
+From d7c740b4d65f6b165086cafae8150d1c9e896722 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Wed, 26 Nov 2014 20:04:52 +0700
+Subject: [PATCH 4/4] libgui: fix test after compatibility patches
+
+Change-Id: Iae7333f025bb0271f008e4cc0356cf704800f1b7
+---
+ libs/gui/tests/Surface_test.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libs/gui/tests/Surface_test.cpp b/libs/gui/tests/Surface_test.cpp
+index 5e6aeef..e31d162 100644
+--- a/libs/gui/tests/Surface_test.cpp
++++ b/libs/gui/tests/Surface_test.cpp
+@@ -96,7 +96,7 @@ TEST_F(SurfaceTest, ScreenshotsOfProtectedBuffersSucceed) {
+     sp<ISurfaceComposer> sf(ComposerService::getComposerService());
+     sp<IBinder> display(sf->getBuiltInDisplay(ISurfaceComposer::eDisplayIdMain));
+     ASSERT_EQ(NO_ERROR, sf->captureScreen(display, producer, Rect(),
+-            64, 64, 0, 0x7fffffff, false));
++            64, 64, 0, 0x7fffffff, false, ISurfaceComposer::eRotateNone, false));
+ 
+     // Set the PROTECTED usage bit and verify that the screenshot fails.  Note
+     // that we need to dequeue a buffer in order for it to actually get
+@@ -125,7 +125,7 @@ TEST_F(SurfaceTest, ScreenshotsOfProtectedBuffersSucceed) {
+         ASSERT_EQ(NO_ERROR, anw->queueBuffer(anw.get(), buf, -1));
+     }
+     ASSERT_EQ(NO_ERROR, sf->captureScreen(display, producer, Rect(),
+-            64, 64, 0, 0x7fffffff, false));
++            64, 64, 0, 0x7fffffff, false, ISurfaceComposer::eRotateNone, false));
+ }
+ 
+ TEST_F(SurfaceTest, ConcreteTypeIsSurface) {
 -- 
 1.9.3 (Apple Git-50)
 

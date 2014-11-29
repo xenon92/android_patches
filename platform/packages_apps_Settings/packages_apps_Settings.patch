@@ -1,7 +1,62 @@
-From 3d4738ded81b1e6caad113afbe582a781371301f Mon Sep 17 00:00:00 2001
+From 28e4f73a8d408755abd5bd1cfe6b8eb7b781cb77 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Wed, 8 Jan 2014 22:42:38 +0700
+Subject: [PATCH 1/2] Settings: use CMHW serial number
+
+See http://review.cyanogenmod.org/57164
+
+Change-Id: If328ca7b487435b88246d1f8c47b04770183f09e
+---
+ src/com/android/settings/deviceinfo/Status.java | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/src/com/android/settings/deviceinfo/Status.java b/src/com/android/settings/deviceinfo/Status.java
+index f9be5ae..c4a9e4c 100644
+--- a/src/com/android/settings/deviceinfo/Status.java
++++ b/src/com/android/settings/deviceinfo/Status.java
+@@ -57,6 +57,8 @@ import com.android.settings.R;
+ import com.android.settings.SelectSubscription;
+ import com.android.settings.Utils;
+ 
++import org.cyanogenmod.hardware.SerialNumber;
++
+ import java.lang.ref.WeakReference;
+ 
+ /**
+@@ -372,7 +374,7 @@ public class Status extends PreferenceActivity {
+ 
+         updateConnectivity();
+ 
+-        String serial = Build.SERIAL;
++        String serial = getSerialNumber();
+         if (serial != null && !serial.equals("")) {
+             setSummaryText(KEY_SERIAL_NUMBER, serial);
+         } else {
+@@ -658,4 +660,16 @@ public class Status extends PreferenceActivity {
+     private boolean isMultiSimEnabled() {
+         return (TelephonyManager.getDefault().getPhoneCount() > 1);
+     }
++
++    private String getSerialNumber() {
++        try {
++            if (SerialNumber.isSupported()) {
++                return SerialNumber.getSerialNumber();
++            }
++        } catch (NoClassDefFoundError e) {
++            // Hardware abstraction framework not installed; fall through
++        }
++
++        return Build.SERIAL;
++    }
+ }
+-- 
+1.9.3 (Apple Git-50)
+
+
+From bb52cca067070690b0896ab988aaac14583c5ee0 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 16 Nov 2014 08:55:55 +0700
-Subject: [PATCH] Settings: i9082: disable manual provisioning
+Subject: [PATCH 2/2] Settings: i9082: disable manual provisioning
 
 Does not work here
 
