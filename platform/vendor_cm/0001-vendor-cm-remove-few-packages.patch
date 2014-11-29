@@ -1,0 +1,78 @@
+From 924dc8945e457112a5ff94418db0c7589a264a2d Mon Sep 17 00:00:00 2001
+From: Shubhang Rathore <shubhang92@gmail.com>
+Date: Sat, 29 Nov 2014 11:55:01 +0530
+Subject: [PATCH] vendor/cm: remove few packages
+
+Wallpapers, live wallpapers, video editor etc.
+
+Change-Id: If571831cc6e00f086f189abc1c14bf646e2d1ac1
+---
+ config/common.mk      |  5 -----
+ config/common_full.mk | 16 +---------------
+ 2 files changed, 1 insertion(+), 20 deletions(-)
+
+diff --git a/config/common.mk b/config/common.mk
+index 197e906..f62202a 100644
+--- a/config/common.mk
++++ b/config/common.mk
+@@ -136,22 +136,17 @@ PRODUCT_PACKAGES += \
+ 
+ # Optional CM packages
+ PRODUCT_PACKAGES += \
+-    VoicePlus \
+-    Basic \
+     libemoji
+ 
+ # Custom CM packages
+ PRODUCT_PACKAGES += \
+-    Launcher3 \
+     Trebuchet \
+     DSPManager \
+     libcyanogen-dsp \
+     audio_effects.conf \
+-    CMWallpapers \
+     Apollo \
+     CMFileManager \
+     LockClock \
+-    CMUpdater \
+     CMAccount \
+     CMHome
+ 
+diff --git a/config/common_full.mk b/config/common_full.mk
+index f5d97e3..a839df9 100644
+--- a/config/common_full.mk
++++ b/config/common_full.mk
+@@ -12,28 +12,14 @@ PRODUCT_PACKAGE_OVERLAYS += vendor/cm/overlay/dictionaries
+ 
+ # Optional CM packages
+ PRODUCT_PACKAGES += \
+-    Galaxy4 \
+-    HoloSpiralWallpaper \
+-    LiveWallpapers \
+     LiveWallpapersPicker \
+-    MagicSmokeWallpapers \
+-    NoiseField \
+     PhaseBeam \
+-    VisualizationWallpapers \
+     PhotoTable \
+     SoundRecorder \
+     PhotoPhase
+ 
+-PRODUCT_PACKAGES += \
+-    VideoEditor \
+-    libvideoeditor_jni \
+-    libvideoeditor_core \
+-    libvideoeditor_osal \
+-    libvideoeditor_videofilters \
+-    libvideoeditorplayer
+-
+ # Extra tools in CM
+ PRODUCT_PACKAGES += \
+     vim \
+     zip \
+-    unrar
+\ No newline at end of file
++    unrar
+-- 
+1.9.1
+
