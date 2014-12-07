@@ -1,4 +1,4 @@
-From 481d0a88f0169d94122243da21f35ba1e0460a9a Mon Sep 17 00:00:00 2001
+From 38015178b2d48d3f2f4a326e4dbafd5072ceb991 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 24 Apr 2013 11:37:19 +0700
 Subject: [PATCH 1/5] OMXCodec: Re-implement requires-flush-before-shutdown
@@ -13,10 +13,10 @@ Change-Id: I1beac06af8118dcf0c248b631bc8e6dbbab2c1d5
  1 file changed, 3 insertions(+)
 
 diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
-index 9b78e9c..bb5f0ab 100644
+index cbdd5fc..c65e6a4 100644
 --- a/media/libstagefright/OMXCodec.cpp
 +++ b/media/libstagefright/OMXCodec.cpp
-@@ -331,6 +331,9 @@ uint32_t OMXCodec::getComponentQuirks(
+@@ -354,6 +354,9 @@ uint32_t OMXCodec::getComponentQuirks(
      if (info->hasQuirk("output-buffers-are-unreadable")) {
          quirks |= kOutputBuffersAreUnreadable;
      }
@@ -30,7 +30,7 @@ index 9b78e9c..bb5f0ab 100644
 1.9.3 (Apple Git-50)
 
 
-From 38f53ad53fb13745baf2196d238ea38ef904a96a Mon Sep 17 00:00:00 2001
+From 468907b84dfa2f27fab93637d8041d71c7ab4303 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 17 Dec 2013 13:15:52 +0700
 Subject: [PATCH 2/5] OMXCodec: set default input buffer size
@@ -47,10 +47,10 @@ Change-Id: I74372f3d821e41feb38b9bc0cca4ef56aa019493
  2 files changed, 25 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 2f4c362..8239153 100644
+index 0f7dffb..4fca1ba 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -1643,6 +1643,19 @@ status_t ACodec::configureCodec(
+@@ -1677,6 +1677,19 @@ status_t ACodec::configureCodec(
      } else if (!strcmp("OMX.Nvidia.aac.decoder", mComponentName.c_str())) {
          err = setMinBufferSize(kPortIndexInput, 8192);  // XXX
      }
@@ -71,10 +71,10 @@ index 2f4c362..8239153 100644
      CHECK_EQ(getPortFormat(kPortIndexInput, inputFormat), (status_t)OK);
      CHECK_EQ(getPortFormat(kPortIndexOutput, outputFormat), (status_t)OK);
 diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
-index bb5f0ab..19dca24 100644
+index c65e6a4..d1bc4ce 100644
 --- a/media/libstagefright/OMXCodec.cpp
 +++ b/media/libstagefright/OMXCodec.cpp
-@@ -833,6 +833,18 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
+@@ -879,6 +879,18 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
      if (meta->findInt32(kKeyMaxInputSize, &maxInputSize)) {
          setMinBufferSize(kPortIndexInput, (OMX_U32)maxInputSize);
      }
@@ -97,7 +97,7 @@ index bb5f0ab..19dca24 100644
 1.9.3 (Apple Git-50)
 
 
-From 5f4ed1d9598a3f514e0d7956d28c84a717f0da05 Mon Sep 17 00:00:00 2001
+From fe185d4f16d4b47d5d6289340cdc917781c0bf64 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 19 Nov 2014 20:33:58 +0700
 Subject: [PATCH 3/5] ACodec: skip port index checking on vc4 encoder
@@ -108,10 +108,10 @@ Change-Id: I3fe742a8ec4b7f9bc0c4e5f0825fd3b88965a95e
  1 file changed, 5 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 8239153..b50099b 100644
+index 4fca1ba..2e835a4 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -3336,6 +3336,11 @@ status_t ACodec::getPortFormat(OMX_U32 portIndex, sp<AMessage> &notify) {
+@@ -3370,6 +3370,11 @@ status_t ACodec::getPortFormat(OMX_U32 portIndex, sp<AMessage> &notify) {
                  mNode, OMX_IndexParamPortDefinition, &def, sizeof(def)),
               (status_t)OK);
  
@@ -127,7 +127,7 @@ index 8239153..b50099b 100644
 1.9.3 (Apple Git-50)
 
 
-From a38222db522a9178870c0b256e48822b2eac77bf Mon Sep 17 00:00:00 2001
+From a3a638d3fc30c5fb15964d4a8962eca153ceb420 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 23 Nov 2014 17:27:20 +0700
 Subject: [PATCH 4/5] ACodec: Don't trust provided width/height when setting
@@ -141,10 +141,10 @@ Change-Id: I202b291a84d2f9a8c29aa2177ba52a0465f39deb
  1 file changed, 3 insertions(+), 7 deletions(-)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index b50099b..57964bd 100644
+index 2e835a4..bfbe945 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -1646,13 +1646,9 @@ status_t ACodec::configureCodec(
+@@ -1680,13 +1680,9 @@ status_t ACodec::configureCodec(
  // Capri's OMX fail to set a reasonable default size from width and height
  #ifdef CAPRI_HWC
      else if (!strncmp(mComponentName.c_str(), "OMX.BRCM.vc4.decoder.", 21)) {
@@ -165,7 +165,7 @@ index b50099b..57964bd 100644
 1.9.3 (Apple Git-50)
 
 
-From 0ee9f477bf547476c9efc392ab3e3af7e03102db Mon Sep 17 00:00:00 2001
+From 45a6705996aeca9fc2ac23d7cb8e4016deff1b41 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 28 Nov 2014 21:07:59 +0700
 Subject: [PATCH 5/5] AudioFlinger: i9082: HACK: disable stereo record

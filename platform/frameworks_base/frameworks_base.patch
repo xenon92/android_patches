@@ -1,57 +1,7 @@
-From 0364bf81b68aa8d4aaf92aa0b59f6a7d1eadbc5f Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Fri, 28 Nov 2014 20:24:02 +0700
-Subject: [PATCH 1/5] KeyguardSimPinView: don't send dummy request to get
- remaining pin
-
-I'm not sure of the behavior on QCOM RILs, but on Broadcom RIL
-(and probably other RILs), this will eat into the user's PIN
-remaining tries. Given that the user is only given ~3 tries, this
-is a very bad idea.
-
-In addition, if onAttachedToWindow is called multiple times before
-the RIL replies, this can completely delete the retry quota leading
-straight to the PUK screen.
-
-Change-Id: I339f1b6d79d543ae8930a7bb95acf823fd5ae20e
----
- .../src/com/android/keyguard/KeyguardSimPinView.java       | 14 ++------------
- 1 file changed, 2 insertions(+), 12 deletions(-)
-
-diff --git a/packages/Keyguard/src/com/android/keyguard/KeyguardSimPinView.java b/packages/Keyguard/src/com/android/keyguard/KeyguardSimPinView.java
-index 30c8330..7b2857a 100644
---- a/packages/Keyguard/src/com/android/keyguard/KeyguardSimPinView.java
-+++ b/packages/Keyguard/src/com/android/keyguard/KeyguardSimPinView.java
-@@ -388,19 +388,9 @@ public class KeyguardSimPinView extends KeyguardPinBasedInputView {
-             mSecurityMessageDisplay.setMessage(getPinPasswordErrorMessage(
-                     mRemainingAttempts, true), true);
-             return;
-+        } else {
-+            mSecurityMessageDisplay.setMessage(R.string.kg_sim_pin_instructions, true);
-         }
--        mSecurityMessageDisplay.setMessage(R.string.kg_sim_pin_instructions, true);
--        new CheckSimPin("") {
--            void onSimCheckResponse(final int result, final int attemptsRemaining) {
--                Log.d(LOG_TAG, "onSimCheckResponse " + " dummy One result" + result +
--                        " attemptsRemaining=" + attemptsRemaining);
--                if (attemptsRemaining >= 0) {
--                    mRemainingAttempts = attemptsRemaining;
--                    mSecurityMessageDisplay.setMessage(
--                            getPinPasswordErrorMessage(attemptsRemaining, true), true);
--                }
--            }
--        }.start();
-     }
- }
- 
--- 
-1.9.3 (Apple Git-50)
-
-
-From cf75f86c056ccb82e0d3cae720a2dbf53c088441 Mon Sep 17 00:00:00 2001
+From 3197cb94e4e56ac10c68782b9fc97eab40cb186a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 23 Nov 2014 13:50:23 +0700
-Subject: [PATCH 2/5] SystemUI: kill MSim logspew
+Subject: [PATCH 1/4] SystemUI: kill MSim logspew
 
 Change-Id: I64ce4e61402d43d4d12ef6a80a9cb42b2fb2979a
 ---
@@ -196,10 +146,10 @@ index 08de53e..6afb1ef 100644
 1.9.3 (Apple Git-50)
 
 
-From cb97d3b5c75256029da59b513d559a530854ace2 Mon Sep 17 00:00:00 2001
+From 4fe51c1ad50ca29e06c27b7adf1b9a4582646aa8 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:47:35 +0700
-Subject: [PATCH 3/5] frameworks: base: add KEYCODE_HOME to wake keys
+Subject: [PATCH 2/4] frameworks: base: add KEYCODE_HOME to wake keys
 
 Change-Id: I77d70df2263dd9c75b02efde18d91585b1ad29f9
 ---
@@ -207,13 +157,13 @@ Change-Id: I77d70df2263dd9c75b02efde18d91585b1ad29f9
  1 file changed, 1 insertion(+)
 
 diff --git a/core/java/android/view/KeyEvent.java b/core/java/android/view/KeyEvent.java
-index 0701b53..f7939a9 100644
+index 788d23f..e2078d0 100644
 --- a/core/java/android/view/KeyEvent.java
 +++ b/core/java/android/view/KeyEvent.java
-@@ -1809,6 +1809,7 @@ public class KeyEvent extends InputEvent implements Parcelable {
-             case KeyEvent.KEYCODE_SLEEP:
-             case KeyEvent.KEYCODE_WAKEUP:
-             case KeyEvent.KEYCODE_PAIRING:
+@@ -1812,6 +1812,7 @@ public class KeyEvent extends InputEvent implements Parcelable {
+             case KeyEvent.KEYCODE_VOLUME_UP:
+             case KeyEvent.KEYCODE_VOLUME_DOWN:
+             case KeyEvent.KEYCODE_VOLUME_MUTE:
 +            case KeyEvent.KEYCODE_HOME:
                  return true;
          }
@@ -222,10 +172,10 @@ index 0701b53..f7939a9 100644
 1.9.3 (Apple Git-50)
 
 
-From f7f62a27f5d3859233b16aac1252a28a60a9283e Mon Sep 17 00:00:00 2001
+From d55519f5ced11bbf41c4d452c2fa0d77c06a5a5f Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:50:29 +0700
-Subject: [PATCH 4/5] TelephonyManager: set properties in Broadcom-style as
+Subject: [PATCH 3/4] TelephonyManager: set properties in Broadcom-style as
  expected by RIL
 
 For i9082
@@ -341,10 +291,10 @@ index 12b65f1..32508ff 100644
 1.9.3 (Apple Git-50)
 
 
-From b6a70cd19972e197b0a637ed34f074f3a0e05c15 Mon Sep 17 00:00:00 2001
+From b9d6a9787d454776195ccb3b770534b088f29f2f Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 22:33:16 +0700
-Subject: [PATCH 5/5] Camera: HACK: i9082: API hacks
+Subject: [PATCH 4/4] Camera: HACK: i9082: API hacks
 
 CTS 5.0 requires the presence of an auto mode, so applications
 may try to use auto without checking.
@@ -399,3 +349,4 @@ index d461bca..a34a758 100644
              case INVALID_OPERATION:
 -- 
 1.9.3 (Apple Git-50)
+

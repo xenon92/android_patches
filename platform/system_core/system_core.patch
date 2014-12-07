@@ -1,4 +1,4 @@
-From 798110778b6010030e47f9bfd55dd6b3f3b655e6 Mon Sep 17 00:00:00 2001
+From 8cf02c573cea060500c702d7645177ad1bbd6491 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 12 Apr 2013 11:40:15 +0700
 Subject: [PATCH 1/2] libnetutils: add ifc_set_mtu
@@ -9,10 +9,10 @@ Change-Id: I3031e9ee38583648350f2c46baa7a9a714b9ea1e
  1 file changed, 16 insertions(+)
 
 diff --git a/libnetutils/ifc_utils.c b/libnetutils/ifc_utils.c
-index 913f51e..e726339 100644
+index d9c50ab..2394f9d 100644
 --- a/libnetutils/ifc_utils.c
 +++ b/libnetutils/ifc_utils.c
-@@ -702,3 +702,19 @@ ifc_configure(const char *ifname,
+@@ -704,3 +704,19 @@ ifc_configure(const char *ifname,
  
      return 0;
  }
@@ -36,7 +36,7 @@ index 913f51e..e726339 100644
 1.9.3 (Apple Git-50)
 
 
-From 3692ec234ff55184f8d6395197c9596fdc87cc67 Mon Sep 17 00:00:00 2001
+From 8f48a9fc92955ced049a8492c42761cb690a03da Mon Sep 17 00:00:00 2001
 From: codeworkx <codeworkx@cyanogenmod.org>
 Date: Sat, 27 Jul 2013 08:18:42 +0200
 Subject: [PATCH 2/2] libutils: refbase: jellybean mr1 compat

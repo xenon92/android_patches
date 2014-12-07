@@ -1,4 +1,4 @@
-From 0758dcff115773b55787934632c6a93e05b1ca42 Mon Sep 17 00:00:00 2001
+From 7b1d6270869b4040c0e702d491412f6f35967911 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 29 Dec 2013 08:54:55 +0700
 Subject: [PATCH 1/2] WifiController: fix high perf lock sometimes not
@@ -121,7 +121,7 @@ index 4b2152e..c244162 100644
 1.9.3 (Apple Git-50)
 
 
-From 4dfdf277e423fca08cb60efee22fba115a39aca0 Mon Sep 17 00:00:00 2001
+From ee9c238c005b5a506d361dc4585a1ea29dd978c2 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 16 Nov 2014 14:35:29 +0700
 Subject: [PATCH 2/2] HACK: i9082: disable libwifi-hal-bcm
