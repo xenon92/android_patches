@@ -1,4 +1,4 @@
-From a53a1b8febcde6d9fb6eae2c7f44f38ac2bc2867 Mon Sep 17 00:00:00 2001
+From d0532ca7d4451ff73d35b27589a3afec85b2818f Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
 Subject: [PATCH 1/3] binder: add compat symbol
@@ -29,7 +29,7 @@ index dd04dcf..9ec2380 100644
 1.9.3 (Apple Git-50)
 
 
-From c4dda8dad869eb854d059cb20d4b60d201d53708 Mon Sep 17 00:00:00 2001
+From eeae74a5c357f6ac9805ad544d8d0af248a29c59 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
 Subject: [PATCH 2/3] binder: add compat symbols
@@ -75,7 +75,7 @@ index 1dbb06f..8b36a54 100644
 1.9.3 (Apple Git-50)
 
 
-From 332588480b62ca391766b984875ded4794513161 Mon Sep 17 00:00:00 2001
+From 0a4cb9ea84313f2c442c45bd23891c83ea794abf Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
 Subject: [PATCH 3/3] sf: CAPRI_HWC: fix rotation artifact

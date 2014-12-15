@@ -1,4 +1,4 @@
-From e5dadfcce39ce1ffb9719ec5d7cef99916dc09ed Mon Sep 17 00:00:00 2001
+From f0f838a151362080e7b5c3bc16c82f0582c33b22 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 16 Nov 2014 14:35:29 +0700
 Subject: [PATCH] HACK: i9082: disable libwifi-hal-bcm
