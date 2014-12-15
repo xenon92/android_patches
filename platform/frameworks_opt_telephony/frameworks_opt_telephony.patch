@@ -1,4 +1,4 @@
-From 8b0ee878f07f2b34fa7a85e313070c1a81d621a6 Mon Sep 17 00:00:00 2001
+From ad87c3bde73519967d3ae87ee32cb442f6d955ee Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 23 Nov 2014 14:23:23 +0700
 Subject: [PATCH 1/3] SubscriptionController: do not return info for invalid
@@ -30,7 +30,7 @@ index 930d2af..34e8d7c 100644
 1.9.3 (Apple Git-50)
 
 
-From cf44099c23015eeab923c894162e0c06d5efcb52 Mon Sep 17 00:00:00 2001
+From 04884ad42eba79b89ff50dbede8473f68ec5b922 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 31 May 2014 12:34:56 +0700
 Subject: [PATCH 2/3] telephony: support for RIL that does not send
@@ -100,7 +100,7 @@ index a021997..67053bd 100644
 1.9.3 (Apple Git-50)
 
 
-From 98809301e576e64ba73133ba8611295540d53983 Mon Sep 17 00:00:00 2001
+From 69e04e9aaec2fdac09da430a4fa5d605e75f8acb Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 17:39:50 +0700
 Subject: [PATCH 3/3] telephony: RIL: i9082: set correct rild names

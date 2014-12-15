@@ -1,155 +1,85 @@
-From 3197cb94e4e56ac10c68782b9fc97eab40cb186a Mon Sep 17 00:00:00 2001
+From 02b81f724c6103b2c2186f88b1e05225114e1a64 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sun, 23 Nov 2014 13:50:23 +0700
-Subject: [PATCH 1/4] SystemUI: kill MSim logspew
+Date: Wed, 10 Dec 2014 14:27:08 +0700
+Subject: [PATCH 1/5] Fix Quick Settings for MSim [1/2]
 
-Change-Id: I64ce4e61402d43d4d12ef6a80a9cb42b2fb2979a
+ - Use the data type icon of active data SIM for QS
+ - Show the data usage of active data SIM for QS
+ - Forward setDataEnabled AS-IS (see part [2/2])
+
+Change-Id: I1c72d9955b1d068ef276386b761f7aa2d664fdc2
 ---
- .../systemui/statusbar/MSimSignalClusterView.java  |  2 +-
- .../policy/MSimNetworkControllerImpl.java          | 36 ++++++++++++----------
- 2 files changed, 20 insertions(+), 18 deletions(-)
+ .../statusbar/policy/MSimNetworkControllerImpl.java         |  2 +-
+ .../systemui/statusbar/policy/MobileDataController.java     |  3 ++-
+ telephony/java/android/telephony/TelephonyManager.java      | 13 ++++++++++++-
+ 3 files changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/MSimSignalClusterView.java b/packages/SystemUI/src/com/android/systemui/statusbar/MSimSignalClusterView.java
-index e273021..e25b174 100644
---- a/packages/SystemUI/src/com/android/systemui/statusbar/MSimSignalClusterView.java
-+++ b/packages/SystemUI/src/com/android/systemui/statusbar/MSimSignalClusterView.java
-@@ -45,7 +45,7 @@ public class MSimSignalClusterView
-         extends LinearLayout
-         implements MSimNetworkControllerImpl.MSimSignalCluster {
- 
--    static final boolean DEBUG = true;
-+    static final boolean DEBUG = false;
-     static final String TAG = "MSimSignalClusterView";
- 
-     private final int STATUS_BAR_STYLE_ANDROID_DEFAULT = 0;
 diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MSimNetworkControllerImpl.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MSimNetworkControllerImpl.java
-index 08de53e..6afb1ef 100644
+index 8ba5e23..2bca3ec 100644
 --- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MSimNetworkControllerImpl.java
 +++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MSimNetworkControllerImpl.java
-@@ -273,7 +273,7 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
-     private int getPhoneId(long subId) {
-         int phoneId;
-         phoneId = SubscriptionManager.getPhoneId(subId);
--        Slog.d(TAG, "getPhoneId phoneId: " +phoneId);
-+        if (DEBUG) Slog.d(TAG, "getPhoneId phoneId: " +phoneId);
-         return phoneId;
-     }
- 
-@@ -697,7 +697,7 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
-     }
- 
-     private final void updateTelephonySignalStrength(int phoneId) {
--        Slog.d(TAG, "updateTelephonySignalStrength: phoneId =" + phoneId);
-+        if (DEBUG) Slog.d(TAG, "updateTelephonySignalStrength: phoneId =" + phoneId);
-         int dataSub = SubscriptionManager.getPhoneId(
-                 SubscriptionManager.getDefaultDataSubId());
-         if ((!hasService(phoneId) &&
-@@ -854,18 +854,18 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
-     }
- 
-     private void updateIconSet(int phoneId) {
--        Slog.d(TAG, "updateIconSet, phoneId = " + phoneId);
-+        if (DEBUG) Slog.d(TAG, "updateIconSet, phoneId = " + phoneId);
-         int voiceNetorkType = mMSimServiceState[phoneId].getVoiceNetworkType();
-         int dataNetorkType =  mMSimServiceState[phoneId].getDataNetworkType();
--        Slog.d(TAG, "updateIconSet, voice network type is: " + voiceNetorkType
-+
-+        if (DEBUG) Slog.d(TAG, "updateIconSet, voice network type is: " + voiceNetorkType
-             + "/" + TelephonyManager.getNetworkTypeName(voiceNetorkType)
-             + ", data network type is: " + dataNetorkType
-             + "/" + TelephonyManager.getNetworkTypeName(dataNetorkType));
--
-         int chosenNetworkType = ((dataNetorkType == TelephonyManager.NETWORK_TYPE_UNKNOWN)
-                     ? voiceNetorkType : dataNetorkType);
- 
--        Slog.d(TAG, "updateIconSet, chosenNetworkType=" + chosenNetworkType
-+        if (DEBUG) Slog.d(TAG, "updateIconSet, chosenNetworkType=" + chosenNetworkType
-             + " hspaDataDistinguishable=" + String.valueOf(mHspaDataDistinguishable)
-             + " hspapDistinguishable=" + "false"
-             + " showAtLeastThreeGees=" + String.valueOf(mShowAtLeastThreeGees));
-@@ -875,27 +875,27 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
-     }
- 
-     private final void updateDataIcon(int phoneId) {
--        Slog.d(TAG,"updateDataIcon phoneId =" + phoneId);
-+        if (DEBUG) Slog.d(TAG,"updateDataIcon phoneId =" + phoneId);
-         int iconId = 0;
-         boolean visible = true;
-         int dataSub = SubscriptionManager.getPhoneId(
-                 SubscriptionManager.getDefaultDataSubId());
- 
--        Slog.d(TAG,"updateDataIcon dataSub =" + dataSub);
-+        if (DEBUG) Slog.d(TAG,"updateDataIcon dataSub =" + dataSub);
-         // DSDS case: Data is active only on DDS. Clear the icon for NON-DDS
-         if (phoneId != dataSub) {
-             mMSimDataConnected[phoneId] = false;
--            Slog.d(TAG,"updateDataIconi: phoneId" + phoneId
-+            if (DEBUG) Slog.d(TAG,"updateDataIconi: phoneId" + phoneId
-                      + " is not DDS.  Clear the mMSimDataConnected Flag and return");
-             return;
+@@ -802,7 +802,7 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
+                 mMSimContentDescriptionDataType[phoneId] =
+                         TelephonyIcons.getDataTypeDesc();
+                 mQSDataTypeIconId =
+-                        TelephonyIcons.getQSDataTypeIcon();
++                        TelephonyIcons.getQSDataTypeIcon(dataSub);
+             }
          }
  
--        Slog.d(TAG,"updateDataIcon  when SimState =" + mMSimState[phoneId]);
-+        if (DEBUG) Slog.d(TAG,"updateDataIcon  when SimState =" + mMSimState[phoneId]);
-         if (mDataNetType == TelephonyManager.NETWORK_TYPE_UNKNOWN) {
-             // If data network type is unknown do not display data icon
-             visible = false;
-         } else if (!isCdma(phoneId)) {
--             Slog.d(TAG,"updateDataIcon  when gsm mMSimState =" + mMSimState[phoneId]);
-+            if (DEBUG) Slog.d(TAG,"updateDataIcon  when gsm mMSimState =" + mMSimState[phoneId]);
-             // GSM case, we have to check also the sim state
-             if (mMSimState[phoneId] == IccCardConstants.State.READY ||
-                 mMSimState[phoneId] == IccCardConstants.State.UNKNOWN) {
-@@ -908,7 +908,7 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
-                     visible = false;
-                 }
-             } else {
--                Slog.d(TAG,"updateDataIcon when no sim");
-+                if (DEBUG) Slog.d(TAG,"updateDataIcon when no sim");
-                 mNoSim = true;
-                 iconId = TelephonyIcons.getNoSimIcon();
-                 visible = false; // no SIM? no data
-@@ -928,7 +928,7 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
-         mMSimDataConnected[phoneId] = visible;
-         mDataConnected = visible;
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileDataController.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileDataController.java
+index 33d68bf..6a61f68 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileDataController.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileDataController.java
+@@ -33,6 +33,7 @@ import android.net.NetworkStatsHistory;
+ import android.net.NetworkTemplate;
+ import android.os.RemoteException;
+ import android.os.ServiceManager;
++import android.telephony.SubscriptionManager;
+ import android.telephony.TelephonyManager;
+ import android.text.format.DateUtils;
+ import android.text.format.Time;
+@@ -207,7 +208,7 @@ public class MobileDataController {
  
--        Slog.d(TAG,"updateDataIcon when mMSimDataConnected[" + phoneId + "] ="
-+        if (DEBUG) Slog.d(TAG,"updateDataIcon when mMSimDataConnected[" + phoneId + "] ="
-             + mMSimDataConnected[phoneId]
-             + " mMSimMobileActivityIconId[" + phoneId +"] = "
-             + mMSimMobileActivityIconId[phoneId]);
-@@ -1031,9 +1031,11 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
-         String mobileLabel = "";
-         String wifiLabel = "";
-         int N;
--        Slog.d(TAG,"refreshViews phoneId =" + phoneId + "mMSimDataConnected ="
--                + mMSimDataConnected[phoneId]);
--        Slog.d(TAG,"refreshViews mMSimDataActivity =" + mMSimDataActivity[phoneId]);
-+        if (DEBUG) {
-+            Slog.d(TAG,"refreshViews phoneId =" + phoneId + "mMSimDataConnected ="
-+                    + mMSimDataConnected[phoneId]);
-+            Slog.d(TAG,"refreshViews mMSimDataActivity =" + mMSimDataActivity[phoneId]);
+     private static String getActiveSubscriberId(Context context) {
+         final TelephonyManager tele = TelephonyManager.from(context);
+-        final String actualSubscriberId = tele.getSubscriberId();
++        final String actualSubscriberId = tele.getSubscriberId(SubscriptionManager.getDefaultDataSubId());
+         return actualSubscriberId;
+     }
+ 
+diff --git a/telephony/java/android/telephony/TelephonyManager.java b/telephony/java/android/telephony/TelephonyManager.java
+index 12b65f1..6755b25 100644
+--- a/telephony/java/android/telephony/TelephonyManager.java
++++ b/telephony/java/android/telephony/TelephonyManager.java
+@@ -3453,7 +3453,18 @@ public class TelephonyManager {
+     /** @hide */
+     @SystemApi
+     public void setDataEnabled(boolean enable) {
+-        setDataEnabledUsingSubId(getDefaultSubscription(), enable);
++        try {
++            AppOpsManager appOps = (AppOpsManager)mContext.getSystemService(Context.APP_OPS_SERVICE);
++            if (enable) {
++                if (appOps.noteOp(AppOpsManager.OP_DATA_CONNECT_CHANGE) != AppOpsManager.MODE_ALLOWED) {
++                    Log.w(TAG, "Permission denied by user.");
++                    return;
++                }
++            }
++            getITelephony().setDataEnabled(enable);
++        } catch (RemoteException e) {
++            Log.e(TAG, "Error calling setDataEnabled", e);
 +        }
-         int dataSub = SubscriptionManager.getPhoneId(
-                 SubscriptionManager.getDefaultDataSubId());
-         if (!mHasMobileDataFeature) {
-@@ -1186,7 +1188,7 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
-         }
+     }
  
-         if (!mMSimDataConnected[phoneId]) {
--            Slog.d(TAG, "refreshViews: Data not connected!! Set no data type icon / Roaming for"
-+            if (DEBUG) Slog.d(TAG, "refreshViews: Data not connected!! Set no data type icon / Roaming for"
-                     + " phoneId: " + phoneId);
-             mMSimDataTypeIconId[phoneId] = 0;
-             if (phoneId == dataSub) {
+     /** @hide */
 -- 
 1.9.3 (Apple Git-50)
 
 
-From 4fe51c1ad50ca29e06c27b7adf1b9a4582646aa8 Mon Sep 17 00:00:00 2001
+From a019f7f4e7e9b07cc1d49144fb1897ef7c4a86fa Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:47:35 +0700
-Subject: [PATCH 2/4] frameworks: base: add KEYCODE_HOME to wake keys
+Subject: [PATCH 2/5] frameworks: base: add KEYCODE_HOME to wake keys
 
 Change-Id: I77d70df2263dd9c75b02efde18d91585b1ad29f9
 ---
@@ -172,10 +102,10 @@ index 788d23f..e2078d0 100644
 1.9.3 (Apple Git-50)
 
 
-From d55519f5ced11bbf41c4d452c2fa0d77c06a5a5f Mon Sep 17 00:00:00 2001
+From 681ded84f9450830e86e225d7979fa50a2c59f77 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:50:29 +0700
-Subject: [PATCH 3/4] TelephonyManager: set properties in Broadcom-style as
+Subject: [PATCH 3/5] TelephonyManager: set properties in Broadcom-style as
  expected by RIL
 
 For i9082
@@ -186,7 +116,7 @@ Change-Id: I475fdd164b3316720387fefb14a3e12fbc262b39
  1 file changed, 20 insertions(+), 49 deletions(-)
 
 diff --git a/telephony/java/android/telephony/TelephonyManager.java b/telephony/java/android/telephony/TelephonyManager.java
-index 12b65f1..32508ff 100644
+index 6755b25..f3d81e0 100644
 --- a/telephony/java/android/telephony/TelephonyManager.java
 +++ b/telephony/java/android/telephony/TelephonyManager.java
 @@ -2729,44 +2729,16 @@ public class TelephonyManager {
@@ -291,10 +221,10 @@ index 12b65f1..32508ff 100644
 1.9.3 (Apple Git-50)
 
 
-From b9d6a9787d454776195ccb3b770534b088f29f2f Mon Sep 17 00:00:00 2001
+From 6481a5b5a1f10eaf088c20841e5c39d4d90d5956 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 22:33:16 +0700
-Subject: [PATCH 4/4] Camera: HACK: i9082: API hacks
+Subject: [PATCH 4/5] Camera: HACK: i9082: API hacks
 
 CTS 5.0 requires the presence of an auto mode, so applications
 may try to use auto without checking.
@@ -309,10 +239,10 @@ Change-Id: I929feffa4f79c69e9d7be7d1acacb3c228280bfe
  3 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java b/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
-index 03540e1..a4555e3 100644
+index 8376e7c..a1decec 100644
 --- a/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
 +++ b/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
-@@ -1100,7 +1100,7 @@ public class LegacyMetadataMapper {
+@@ -1040,7 +1040,7 @@ public class LegacyMetadataMapper {
                  return CONTROL_AE_ANTIBANDING_MODE_OFF;
              }
              case Camera.Parameters.ANTIBANDING_50HZ: {
@@ -347,6 +277,38 @@ index d461bca..a34a758 100644
              case EOPNOTSUPP:
                  throw new CameraRuntimeException(CAMERA_DEPRECATED_HAL);
              case INVALID_OPERATION:
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 72739be1090c3d08dabfad638c979298a008fa9a Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Mon, 15 Dec 2014 21:51:35 +0700
+Subject: [PATCH 5/5] ColorFade: updateTexImage before releasing Surface
+
+Required for screenshot to be read properly on i9082
+
+Change-Id: Ic6c73d7e06ab670bf706fea474cdc996b3b6e1d5
+---
+ services/core/java/com/android/server/display/ColorFade.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/services/core/java/com/android/server/display/ColorFade.java b/services/core/java/com/android/server/display/ColorFade.java
+index f549f3d..0fb572d 100644
+--- a/services/core/java/com/android/server/display/ColorFade.java
++++ b/services/core/java/com/android/server/display/ColorFade.java
+@@ -465,10 +465,10 @@ final class ColorFade {
+                 SurfaceControl.screenshot(SurfaceControl.getBuiltInDisplay(
+                         SurfaceControl.BUILT_IN_DISPLAY_ID_MAIN), s);
+             } finally {
++                st.updateTexImage();
+                 s.release();
+             }
+ 
+-            st.updateTexImage();
+             st.getTransformMatrix(mTexMatrix);
+ 
+             // Set up texture coordinates for a quad.
 -- 
 1.9.3 (Apple Git-50)
 

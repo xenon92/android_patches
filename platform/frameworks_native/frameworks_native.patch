@@ -1,4 +1,4 @@
-From 41a87307796b9fe4eb85005ad1f444e56cd2f553 Mon Sep 17 00:00:00 2001
+From a53a1b8febcde6d9fb6eae2c7f44f38ac2bc2867 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
 Subject: [PATCH 1/3] binder: add compat symbol
@@ -29,7 +29,7 @@ index dd04dcf..9ec2380 100644
 1.9.3 (Apple Git-50)
 
 
-From 33bd14fbf6ab082915ac4b89b48699549f0bfe84 Mon Sep 17 00:00:00 2001
+From c4dda8dad869eb854d059cb20d4b60d201d53708 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
 Subject: [PATCH 2/3] binder: add compat symbols
@@ -75,7 +75,7 @@ index 1dbb06f..8b36a54 100644
 1.9.3 (Apple Git-50)
 
 
-From 89673dd8d6ed79664121c4c5566bc9d48521f89e Mon Sep 17 00:00:00 2001
+From 332588480b62ca391766b984875ded4794513161 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
 Subject: [PATCH 3/3] sf: CAPRI_HWC: fix rotation artifact
@@ -85,10 +85,10 @@ Subject: [PATCH 3/3] sf: CAPRI_HWC: fix rotation artifact
  1 file changed, 5 insertions(+)
 
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index 08cdedc..50f2eb4 100644
+index bbe5e90..97b03f7 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
-@@ -3630,6 +3630,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
+@@ -3640,6 +3640,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
  {
      ATRACE_CALL();
  

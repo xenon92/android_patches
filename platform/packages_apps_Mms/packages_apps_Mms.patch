@@ -1,0 +1,176 @@
+From bf1e98317d73365e007cf3333a3a6584322ceb39 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Thu, 12 Dec 2013 09:56:20 +0700
+Subject: [PATCH] Mms: fix quick message layout on 320dp
+
+match_parent no longer works properly on 4.4 for some reason, so
+we hardcode it to 300dp.
+
+Also cleaned up how 360dp devices are handled to avoid duplicating
+layout.
+
+Before: http://imgur.com/UKo4aUL
+After: http://i.imgur.com/Eu6WMnm
+
+Change-Id: I722e97ada7a434315d0c603c6eede3e8ed16b1e4
+---
+ res/layout-xhdpi/dialog_quickmessage.xml | 94 --------------------------------
+ res/layout/dialog_quickmessage.xml       |  2 +-
+ res/values-sw360dp/dimens.xml            | 18 ++++++
+ res/values/dimens.xml                    |  1 +
+ 4 files changed, 20 insertions(+), 95 deletions(-)
+ delete mode 100644 res/layout-xhdpi/dialog_quickmessage.xml
+ create mode 100644 res/values-sw360dp/dimens.xml
+
+diff --git a/res/layout-xhdpi/dialog_quickmessage.xml b/res/layout-xhdpi/dialog_quickmessage.xml
+deleted file mode 100644
+index 8062050..0000000
+--- a/res/layout-xhdpi/dialog_quickmessage.xml
++++ /dev/null
+@@ -1,94 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<!-- Copyright (C) 2012 The Android Open Source Project
+-     QuickMessage support (C) 2012 The CyanogenMod Project (DvTonder)
+-
+-     Licensed under the Apache License, Version 2.0 (the "License");
+-     you may not use this file except in compliance with the License.
+-     You may obtain a copy of the License at
+-
+-          http://www.apache.org/licenses/LICENSE-2.0
+-
+-     Unless required by applicable law or agreed to in writing, software
+-     distributed under the License is distributed on an "AS IS" BASIS,
+-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-     See the License for the specific language governing permissions and
+-     limitations under the License.
+--->
+-
+-<LinearLayout
+-    xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:id="@+id/QuickMessageMainlayout"
+-    android:layout_width="340dip"
+-    android:layout_height="wrap_content"
+-    android:layout_gravity="center_horizontal|bottom"
+-    android:orientation="vertical" >
+-
+-    <!-- The Message Pager -->
+-    <android.support.v4.view.ViewPager
+-        android:layout_width="match_parent"
+-        android:layout_height="@dimen/qm_message_height"
+-        android:gravity="center"
+-        android:id="@+id/message_pager" />
+-
+-    <!-- Message counter and Pager indicator -->
+-    <ImageView
+-        android:id="@+id/pager_arrow"
+-        android:layout_height="wrap_content"
+-        android:layout_width="match_parent"
+-        android:src="@drawable/line_divider_arrow"
+-        android:layout_gravity="center_horizontal|bottom"
+-        android:scaleType="fitXY" />
+-
+-    <TextView
+-        android:id="@+id/message_counter"
+-        android:layout_width="match_parent"
+-        android:layout_height="wrap_content"
+-        android:autoLink="all"
+-        android:gravity="center"
+-        android:textSize="12sp"
+-        android:textColor="?android:attr/textColorTertiary" />
+-
+-    <!-- Buttons -->
+-    <LinearLayout
+-        android:id="@+id/buttonPanel"
+-        android:layout_width="match_parent"
+-        android:layout_height="wrap_content"
+-        android:minHeight="@dimen/qm_dialog_button_bar_height"
+-        android:orientation="vertical"
+-        android:divider="?android:attr/dividerHorizontal"
+-        android:showDividers="beginning"
+-        android:dividerPadding="0dip">
+-
+-        <LinearLayout
+-            style="?android:attr/buttonBarStyle"
+-            android:layout_width="match_parent"
+-            android:layout_height="wrap_content"
+-            android:orientation="horizontal"
+-            android:measureWithLargestChild="true">
+-
+-            <Button
+-                android:id="@+id/button_close"
+-                android:layout_width="wrap_content"
+-                android:layout_gravity="left"
+-                android:layout_weight="1"
+-                android:maxLines="2"
+-                style="?android:attr/buttonBarButtonStyle"
+-                android:text="@string/button_close"
+-                android:textSize="14sp"
+-                android:minHeight="@dimen/qm_dialog_button_bar_height"
+-                android:layout_height="wrap_content" />
+-
+-            <Button
+-                android:id="@+id/button_view"
+-                android:layout_width="wrap_content"
+-                android:layout_gravity="right"
+-                android:layout_weight="1"
+-                android:maxLines="2"
+-                android:minHeight="@dimen/qm_dialog_button_bar_height"
+-                style="?android:attr/buttonBarButtonStyle"
+-                android:text="@string/button_view"
+-                android:textSize="14sp"
+-                android:layout_height="wrap_content" />
+-        </LinearLayout>
+-    </LinearLayout>
+-</LinearLayout>
+diff --git a/res/layout/dialog_quickmessage.xml b/res/layout/dialog_quickmessage.xml
+index f5aa25d..72df979 100644
+--- a/res/layout/dialog_quickmessage.xml
++++ b/res/layout/dialog_quickmessage.xml
+@@ -17,7 +17,7 @@
+ <LinearLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:id="@+id/QuickMessageMainlayout"
+-    android:layout_width="match_parent"
++    android:layout_width="@dimen/qm_message_width"
+     android:layout_height="wrap_content"
+     android:layout_gravity="center_horizontal|bottom"
+     android:orientation="vertical" >
+diff --git a/res/values-sw360dp/dimens.xml b/res/values-sw360dp/dimens.xml
+new file mode 100644
+index 0000000..b91cf1f
+--- /dev/null
++++ b/res/values-sw360dp/dimens.xml
+@@ -0,0 +1,18 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- Copyright (C) 2013 The CyanogenMod Project
++
++     Licensed under the Apache License, Version 2.0 (the "License");
++     you may not use this file except in compliance with the License.
++     You may obtain a copy of the License at
++
++          http://www.apache.org/licenses/LICENSE-2.0
++
++     Unless required by applicable law or agreed to in writing, software
++     distributed under the License is distributed on an "AS IS" BASIS,
++     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++     See the License for the specific language governing permissions and
++     limitations under the License.
++-->
++<resources>
++    <dimen name="qm_message_width">340dp</dimen>
++</resources>
+diff --git a/res/values/dimens.xml b/res/values/dimens.xml
+index 1f06eda..da237f1 100755
+--- a/res/values/dimens.xml
++++ b/res/values/dimens.xml
+@@ -24,6 +24,7 @@ All Rights Reserved. -->
+     <dimen name="widget_margin_bottom">0dip</dimen>
+ 
+     <!-- QuickMessage -->
++    <dimen name="qm_message_width">300dp</dimen>
+     <dimen name="qm_message_height">210dp</dimen>
+     <dimen name="qm_dialog_button_bar_height">48dip</dimen>
+ 
+-- 
+1.9.3 (Apple Git-50)
+
