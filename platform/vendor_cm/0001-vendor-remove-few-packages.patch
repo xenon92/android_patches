@@ -1,0 +1,75 @@
+From 77f9b805017e6ad3ad3dd9f629b4f85b8c09cac6 Mon Sep 17 00:00:00 2001
+From: Shubhang Rathore <shubhang92@gmail.com>
+Date: Sat, 20 Dec 2014 07:03:40 -0500
+Subject: [PATCH] vendor: remove few packages
+
+Change-Id: Ic7f016cb3c6a3ccfbcfecae442b356db285b10d8
+---
+ config/common.mk      |  5 -----
+ config/common_full.mk | 20 ++------------------
+ 2 files changed, 2 insertions(+), 23 deletions(-)
+
+diff --git a/config/common.mk b/config/common.mk
+index 2a87112..dfbdf17 100644
+--- a/config/common.mk
++++ b/config/common.mk
+@@ -132,20 +132,15 @@ PRODUCT_PACKAGES += \
+ 
+ # Optional CM packages
+ PRODUCT_PACKAGES += \
+-    VoicePlus \
+-    Basic \
+     libemoji
+ 
+ # Custom CM packages
+ PRODUCT_PACKAGES += \
+-    Launcher3 \
+     Trebuchet \
+     AudioFX \
+-    CMWallpapers \
+     CMFileManager \
+     Eleven \
+     LockClock \
+-    CMUpdater \
+     CMAccount \
+     CMHome
+ 
+diff --git a/config/common_full.mk b/config/common_full.mk
+index f5d97e3..5772915 100644
+--- a/config/common_full.mk
++++ b/config/common_full.mk
+@@ -12,28 +12,12 @@ PRODUCT_PACKAGE_OVERLAYS += vendor/cm/overlay/dictionaries
+ 
+ # Optional CM packages
+ PRODUCT_PACKAGES += \
+-    Galaxy4 \
+-    HoloSpiralWallpaper \
+-    LiveWallpapers \
+     LiveWallpapersPicker \
+-    MagicSmokeWallpapers \
+-    NoiseField \
+     PhaseBeam \
+-    VisualizationWallpapers \
+-    PhotoTable \
+-    SoundRecorder \
+-    PhotoPhase
+-
+-PRODUCT_PACKAGES += \
+-    VideoEditor \
+-    libvideoeditor_jni \
+-    libvideoeditor_core \
+-    libvideoeditor_osal \
+-    libvideoeditor_videofilters \
+-    libvideoeditorplayer
++    SoundRecorder
+ 
+ # Extra tools in CM
+ PRODUCT_PACKAGES += \
+     vim \
+     zip \
+-    unrar
+\ No newline at end of file
++    unrar
+-- 
+2.1.0
+
