@@ -1,4 +1,4 @@
-From 753a6d795d0f82fff1d9e63adbb15000c15b34c9 Mon Sep 17 00:00:00 2001
+From c08f81c6ca8396e93ed9b412dbe74a227b769e10 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 12 Dec 2013 09:56:20 +0700
 Subject: [PATCH] Mms: fix quick message layout on 320dp

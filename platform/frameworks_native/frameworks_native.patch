@@ -1,7 +1,7 @@
 From f5a10b0b68a605c72d21cbb6154ce22c8e61fcbf Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
-Subject: [PATCH 1/4] binder: add compat symbol
+Subject: [PATCH 1/5] binder: add compat symbol
 
 Required for older Samsung libtvout
 
@@ -32,7 +32,7 @@ index dd04dcf..9ec2380 100644
 From 09dfa878275bf6f659f872e6cb78e622f2c51d00 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
-Subject: [PATCH 2/4] binder: add compat symbols
+Subject: [PATCH 2/5] binder: add compat symbols
 
 Required for libtvservice_binder.so on I9082
 
@@ -78,7 +78,7 @@ index 1dbb06f..8b36a54 100644
 From 6c3105fa714aa2e62a76511c4502630eabe92fd6 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
-Subject: [PATCH 3/4] sf: CAPRI_HWC: fix rotation artifact
+Subject: [PATCH 3/5] sf: CAPRI_HWC: fix rotation artifact
 
 ---
  services/surfaceflinger/SurfaceFlinger.cpp | 5 +++++
@@ -107,7 +107,7 @@ index bbe5e90..97b03f7 100644
 From 87783ab8b67f8acbcf23f455a940a2015223a3f2 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 15 Dec 2014 23:12:44 +0700
-Subject: [PATCH 4/4] SurfaceComposerClient: don't block RGBA_8888 for
+Subject: [PATCH 4/5] SurfaceComposerClient: don't block RGBA_8888 for
  screenshot on CAPRI_HWC
 
 Works here and required for ColorFade animation
@@ -130,6 +130,37 @@ index 6ec4f23..40d0c81 100644
      int format = 0;
      producer->query(NATIVE_WINDOW_FORMAT,&format);
      if (format == PIXEL_FORMAT_RGBA_8888) {
+-- 
+1.9.3 (Apple Git-50)
+
+
+From a4f1c9e23968ebb3410e84b6c8151a6649bb4493 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sat, 20 Dec 2014 19:09:27 +0700
+Subject: [PATCH 5/5] sf: CAPRI_HWC: fix for screen recording
+
+Change-Id: I6c7e59400eab86bc5ec0ffebbcc475fa0fa404d2
+---
+ libs/gui/BufferQueueProducer.cpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/libs/gui/BufferQueueProducer.cpp b/libs/gui/BufferQueueProducer.cpp
+index f152b65..3b2fd0a 100644
+--- a/libs/gui/BufferQueueProducer.cpp
++++ b/libs/gui/BufferQueueProducer.cpp
+@@ -199,7 +199,12 @@ status_t BufferQueueProducer::waitForFreeSlotThenRelock(const char* caller,
+             const int newUndequeuedCount =
+                 maxBufferCount - (dequeuedCount + 1);
+             const int minUndequeuedCount =
++#ifdef CAPRI_HWC
++                // HACK: for some reason, we need to reduce min undequeue for screen recording
++                mCore->getMinUndequeuedBufferCountLocked(false);
++#else
+                 mCore->getMinUndequeuedBufferCountLocked(async);
++#endif
+             if (newUndequeuedCount < minUndequeuedCount) {
+                 BQ_LOGE("%s: min undequeued buffer count (%d) exceeded "
+                         "(dequeued=%d undequeued=%d)",
 -- 
 1.9.3 (Apple Git-50)
 

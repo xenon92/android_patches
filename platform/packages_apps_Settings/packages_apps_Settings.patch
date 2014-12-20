@@ -1,4 +1,4 @@
-From d40506ad81571cda5f66ed705d27410bd405da41 Mon Sep 17 00:00:00 2001
+From 4673f338a772a8c20c1457b76fdf07be0bb26671 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 16 Nov 2014 08:55:55 +0700
 Subject: [PATCH] Settings: i9082: disable manual provisioning
