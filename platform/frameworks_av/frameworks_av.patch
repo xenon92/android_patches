@@ -1,7 +1,7 @@
-From 8dafd7111d803dbe4e5d03f7f836588dab495c6e Mon Sep 17 00:00:00 2001
+From f2c30f846609448ab2f2f7a9031f4ab7e9fbdd12 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 24 Apr 2013 11:37:19 +0700
-Subject: [PATCH 1/8] OMXCodec: Re-implement requires-flush-before-shutdown
+Subject: [PATCH 1/9] OMXCodec: Re-implement requires-flush-before-shutdown
  quirk
 
 Support is already there, but is not in the codec quirk reading list.
@@ -30,10 +30,10 @@ index fe38f16..b6e4d25 100644
 1.9.3 (Apple Git-50)
 
 
-From 76a1193ab038a74aed0e93936d9fbcd33e622390 Mon Sep 17 00:00:00 2001
+From 303f674490ced62b19c3053e8a3549c06cde67c8 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 17 Dec 2013 13:15:52 +0700
-Subject: [PATCH 2/8] OMXCodec: set default input buffer size
+Subject: [PATCH 2/9] OMXCodec: set default input buffer size
 
 Broadcom OMX only set the buffer size to 65536 by default which
 is not enough for higher bitrate video
@@ -97,10 +97,10 @@ index b6e4d25..b4aa20d 100644
 1.9.3 (Apple Git-50)
 
 
-From 074c2bad6280cf58bed18d4d5077bca526904368 Mon Sep 17 00:00:00 2001
+From e16af8aa63b40d9b7014c62f3cfe317042bc8d0a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 19 Nov 2014 20:33:58 +0700
-Subject: [PATCH 3/8] ACodec: skip port index checking on vc4 encoder
+Subject: [PATCH 3/9] ACodec: skip port index checking on vc4 encoder
 
 Change-Id: I3fe742a8ec4b7f9bc0c4e5f0825fd3b88965a95e
 ---
@@ -127,10 +127,10 @@ index 04f6d68..67558ab 100644
 1.9.3 (Apple Git-50)
 
 
-From 1b2fc9bc1a7c87709d64d8f406f9036b81cd889b Mon Sep 17 00:00:00 2001
+From cac18e0afab6bded3f6f8fd6f942a270d6e22493 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 23 Nov 2014 17:27:20 +0700
-Subject: [PATCH 4/8] ACodec: Don't trust provided width/height when setting
+Subject: [PATCH 4/9] ACodec: Don't trust provided width/height when setting
  input buffer size
 
 They are bogus
@@ -165,10 +165,10 @@ index 67558ab..5a4f1bd 100644
 1.9.3 (Apple Git-50)
 
 
-From 51836ccc67e9d0576e5e15dc2dd836f070d5c124 Mon Sep 17 00:00:00 2001
+From cb5f9b37ab4f5952303334af9e0428d28f531695 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 28 Nov 2014 21:07:59 +0700
-Subject: [PATCH 5/8] AudioFlinger: i9082: HACK: disable stereo record
+Subject: [PATCH 5/9] AudioFlinger: i9082: HACK: disable stereo record
 
 Stereo record causes audio to speed up x2 for some reason.
 Record in mono and let AudioFlinger resample to stereo
@@ -200,10 +200,10 @@ index 0717e57..557e65a 100644
 1.9.3 (Apple Git-50)
 
 
-From 8cba9cf06848809dec2a07d14ad9139789720171 Mon Sep 17 00:00:00 2001
+From 765dad95dde29878091fba04c7b7fbec18c1cf22 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 10 Dec 2014 17:38:10 +0700
-Subject: [PATCH 6/8] AudioFlinger: i9082: HACK: force audio to 48 KHz
+Subject: [PATCH 6/9] AudioFlinger: i9082: HACK: force audio to 48 KHz
 
 Let surfaceflinger do all the resampling instead of the audio HAL
 
@@ -233,10 +233,10 @@ index 557e65a..3a3c16b 100644
 1.9.3 (Apple Git-50)
 
 
-From 1ea90932594ec15910f112c98662f0cf9724edea Mon Sep 17 00:00:00 2001
+From a254d4ad5827ce2b7af9a1c1168ebe71586fbe52 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 16 Dec 2014 21:12:22 +0700
-Subject: [PATCH 7/8] stagefright: i9082: don't allocate too many extra buffers
+Subject: [PATCH 7/9] stagefright: i9082: don't allocate too many extra buffers
 
 Too many extra buffers (for a total of 8) causes random
 video freezes and freezes on rotation
@@ -283,10 +283,10 @@ index b4aa20d..5b7d25d 100644
 1.9.3 (Apple Git-50)
 
 
-From 2dc804262ae9fcb99e1be3551dde0c06ab76734b Mon Sep 17 00:00:00 2001
+From e2b5965fab4525198899068d7e54089c525084f4 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:59 +0700
-Subject: [PATCH 8/8] stagefright: CAPRI_HWC: fix for screen recording
+Subject: [PATCH 8/9] stagefright: CAPRI_HWC: fix for screen recording
 
 Change-Id: Ib8a677eb1ecabc30efe163faa9b209f4db966437
 ---
@@ -334,6 +334,86 @@ index 8c22255..eaa20c9 100644
      }
  
      GraphicBufferSource* bufferSource = new GraphicBufferSource(
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 0bf232fe657302cda4764acb3490ec51f3d36353 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 21 Dec 2014 15:25:33 +0700
+Subject: [PATCH 9/9] stagefright: CAPRI_HWC: fix for miracast
+
+Our encoder does not support OMX_Video_ControlRateConstant
+
+Change-Id: I5f98f00406a6b28c1a2a1862fbcefa2fdd9055d6
+---
+ media/libstagefright/ACodec.cpp | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
+index 0b03ba6..c9a1948 100644
+--- a/media/libstagefright/ACodec.cpp
++++ b/media/libstagefright/ACodec.cpp
+@@ -2551,7 +2551,13 @@ static OMX_U32 setPFramesSpacing(int32_t iFramesInterval, int32_t frameRate) {
+     return ret;
+ }
+ 
+-static OMX_VIDEO_CONTROLRATETYPE getBitrateMode(const sp<AMessage> &msg) {
++static OMX_VIDEO_CONTROLRATETYPE getBitrateMode(const sp<AMessage> &msg, const AString &name) {
++#ifdef CAPRI_HWC
++    // vc4 encoder only supports VBR
++    if (strncmp(name.c_str(), "OMX.BRCM.vc4.encoder.", 21) == 0) {
++        return OMX_Video_ControlRateVariable;
++    }
++#endif
+     int32_t tmp;
+     if (!msg->findInt32("bitrate-mode", &tmp)) {
+         return OMX_Video_ControlRateVariable;
+@@ -2567,7 +2573,7 @@ status_t ACodec::setupMPEG4EncoderParameters(const sp<AMessage> &msg) {
+         return INVALID_OPERATION;
+     }
+ 
+-    OMX_VIDEO_CONTROLRATETYPE bitrateMode = getBitrateMode(msg);
++    OMX_VIDEO_CONTROLRATETYPE bitrateMode = getBitrateMode(msg, mComponentName);
+ 
+     float frameRate;
+     if (!msg->findFloat("frame-rate", &frameRate)) {
+@@ -2649,7 +2655,7 @@ status_t ACodec::setupH263EncoderParameters(const sp<AMessage> &msg) {
+         return INVALID_OPERATION;
+     }
+ 
+-    OMX_VIDEO_CONTROLRATETYPE bitrateMode = getBitrateMode(msg);
++    OMX_VIDEO_CONTROLRATETYPE bitrateMode = getBitrateMode(msg, mComponentName);
+ 
+     float frameRate;
+     if (!msg->findFloat("frame-rate", &frameRate)) {
+@@ -2777,7 +2783,7 @@ status_t ACodec::setupAVCEncoderParameters(const sp<AMessage> &msg) {
+         return INVALID_OPERATION;
+     }
+ 
+-    OMX_VIDEO_CONTROLRATETYPE bitrateMode = getBitrateMode(msg);
++    OMX_VIDEO_CONTROLRATETYPE bitrateMode = getBitrateMode(msg, mComponentName);
+ 
+     float frameRate;
+     if (!msg->findFloat("frame-rate", &frameRate)) {
+@@ -2892,7 +2898,7 @@ status_t ACodec::setupHEVCEncoderParameters(const sp<AMessage> &msg) {
+         return INVALID_OPERATION;
+     }
+ 
+-    OMX_VIDEO_CONTROLRATETYPE bitrateMode = getBitrateMode(msg);
++    OMX_VIDEO_CONTROLRATETYPE bitrateMode = getBitrateMode(msg, mComponentName);
+ 
+     float frameRate;
+     if (!msg->findFloat("frame-rate", &frameRate)) {
+@@ -2959,7 +2965,7 @@ status_t ACodec::setupVPXEncoderParameters(const sp<AMessage> &msg) {
+     }
+     msg->findInt32("i-frame-interval", &iFrameInterval);
+ 
+-    OMX_VIDEO_CONTROLRATETYPE bitrateMode = getBitrateMode(msg);
++    OMX_VIDEO_CONTROLRATETYPE bitrateMode = getBitrateMode(msg, mComponentName);
+ 
+     float frameRate;
+     if (!msg->findFloat("frame-rate", &frameRate)) {
 -- 
 1.9.3 (Apple Git-50)
 

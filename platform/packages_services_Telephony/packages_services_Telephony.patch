@@ -1,7 +1,161 @@
-From c119920b7d0e311974be5f311b3b52bf0fe48518 Mon Sep 17 00:00:00 2001
+From 5364d1ccba61ac0a75247251b509b26860ca4358 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Wed, 24 Dec 2014 19:38:40 +0700
+Subject: [PATCH 1/5] Revert "XDivert changes for MSIM"
+
+This reverts commit fa66d7833488cff0c0c6a69c92e87e2fc78af894.
+
+XDivert links to some package we don't have, leading to a crash.
+
+Change-Id: I740594dfbb1700fa45bf92dcdad4d23a03229b72
+---
+ res/values/strings.xml                         |  6 ------
+ res/xml/call_feature_setting_msim.xml          | 10 ----------
+ src/com/android/phone/CallFeaturesSetting.java | 10 ----------
+ 3 files changed, 26 deletions(-)
+
+diff --git a/res/values/strings.xml b/res/values/strings.xml
+index 40a0aca..8fbc2eb 100644
+--- a/res/values/strings.xml
++++ b/res/values/strings.xml
+@@ -1477,12 +1477,6 @@
+     <string name="exportAllcontatsNoContacts"> No Contacts found to export to SIM !!!</string>
+     <string name="cursorError"> Cursor is not having proper data !!! </string>
+ 
+-     <!-- XDivert Settings -->
+-     <!-- Title for the XDivert Feature displayed in Call Settings -->
+-     <string name="xdivert_title">X-Divert</string>
+-     <!-- Summary for the XDivert Feature displayed in Call Settings -->
+-     <string name="xdivert_summary">CFNRc Settings</string>
+-
+     <!-- UPLMN Prefer -->
+     <string name="uplmn_list_setting_title">Preferred networks</string>
+     <string name="network_id">Network ID</string>
+diff --git a/res/xml/call_feature_setting_msim.xml b/res/xml/call_feature_setting_msim.xml
+index 0db5700..213f0a6 100644
+--- a/res/xml/call_feature_setting_msim.xml
++++ b/res/xml/call_feature_setting_msim.xml
+@@ -79,16 +79,6 @@
+         android:persistent="true"
+         android:defaultValue="true" />
+ 
+-      <PreferenceScreen
+-          android:key="button_xdivert"
+-          android:title="@string/xdivert_title"
+-          android:summary="@string/xdivert_summary"
+-          android:persistent="false">
+-          <intent android:action="android.intent.action.MAIN"
+-                  android:targetPackage="com.qti.xdivert"
+-                      android:targetClass="com.qti.xdivert.XDivertSetting" />
+-      </PreferenceScreen>
+-
+     <!-- Add videocall settings menu  -->
+     <PreferenceCategory
+         android:key="button_videocall_settings_key"
+diff --git a/src/com/android/phone/CallFeaturesSetting.java b/src/com/android/phone/CallFeaturesSetting.java
+index 0ac7ae6..4cadc7a 100644
+--- a/src/com/android/phone/CallFeaturesSetting.java
++++ b/src/com/android/phone/CallFeaturesSetting.java
+@@ -191,7 +191,6 @@ public class CallFeaturesSetting extends PreferenceActivity
+             "phone_account_settings_preference_screen";
+ 
+     private static final String BUTTON_SELECT_SUB_KEY  = "button_call_independent_serv";
+-    private static final String BUTTON_XDIVERT_KEY = "button_xdivert";
+ 
+     private Intent mContactListIntent;
+ 
+@@ -1754,15 +1753,6 @@ public class CallFeaturesSetting extends PreferenceActivity
+                     "com.android.phone.msim.MSimCallFeaturesSubSetting");
+         }
+ 
+-        if (isMsim && TelephonyManager.getDefault().getMultiSimConfiguration() !=
+-                TelephonyManager.MultiSimVariants.DSDS) {
+-            PreferenceScreen mXDivertPref = (PreferenceScreen) findPreference(BUTTON_XDIVERT_KEY);
+-            if (mXDivertPref != null) {
+-                log("Remove xdivert preference");
+-                prefSet.removePreference(mXDivertPref);
+-            }
+-        }
+-
+         if (mButtonDTMF != null) {
+             int dtmf = Settings.System.getInt(getContentResolver(),
+                     Settings.System.DTMF_TONE_TYPE_WHEN_DIALING, Constants.DTMF_TONE_TYPE_NORMAL);
+-- 
+1.9.3 (Apple Git-50)
+
+
+From b04ddd209c068a778ece0b81b45c8f95df2d2c37 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Tue, 23 Dec 2014 22:15:37 +0700
+Subject: [PATCH 2/5] Telephony: fix 'up' navigation for SelectSubscription
+
+The 'up' command should be passed down to the activity in the tab
+
+Change-Id: I70d5e4d5cb2d44f62cca481337f108d122726e14
+---
+ src/com/android/phone/msim/MSimCallFeaturesSubSetting.java | 6 +-----
+ src/com/android/phone/msim/SelectSubscription.java         | 9 +++++++++
+ 2 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/src/com/android/phone/msim/MSimCallFeaturesSubSetting.java b/src/com/android/phone/msim/MSimCallFeaturesSubSetting.java
+index c0770b7..c23f666 100644
+--- a/src/com/android/phone/msim/MSimCallFeaturesSubSetting.java
++++ b/src/com/android/phone/msim/MSimCallFeaturesSubSetting.java
+@@ -1991,11 +1991,7 @@ public class MSimCallFeaturesSubSetting extends PreferenceActivity
+     public boolean onOptionsItemSelected(MenuItem item) {
+         final int itemId = item.getItemId();
+         if (itemId == android.R.id.home) {  // See ActionBar#setDisplayHomeAsUpEnabled()
+-            Intent intent = new Intent();
+-            intent.setClassName(UP_ACTIVITY_PACKAGE, UP_ACTIVITY_CLASS);
+-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+-            startActivity(intent);
+-            finish();
++            CallFeaturesSetting.goUpToTopLevelSetting(this);
+             return true;
+         }
+         return super.onOptionsItemSelected(item);
+diff --git a/src/com/android/phone/msim/SelectSubscription.java b/src/com/android/phone/msim/SelectSubscription.java
+index 7a2b4e7..ab858d4 100644
+--- a/src/com/android/phone/msim/SelectSubscription.java
++++ b/src/com/android/phone/msim/SelectSubscription.java
+@@ -29,6 +29,7 @@
+ 
+ package com.android.phone.msim;
+ 
++import android.app.Activity;
+ import android.app.TabActivity;
+ import android.content.Intent;
+ import android.os.Bundle;
+@@ -36,6 +37,7 @@ import android.telephony.SubInfoRecord;
+ import android.telephony.SubscriptionManager;
+ import android.telephony.TelephonyManager;
+ import android.util.Log;
++import android.view.MenuItem;
+ import android.widget.TabHost;
+ import android.widget.TabHost.TabSpec;
+ 
+@@ -102,6 +104,13 @@ public class SelectSubscription extends  TabActivity {
+     }
+ 
+     @Override
++    public boolean onOptionsItemSelected(MenuItem item) {
++        String tabTag = getTabHost().getCurrentTabTag();
++        Activity activity = getLocalActivityManager().getActivity(tabTag);
++        return activity.onOptionsItemSelected(item);
++    }
++
++    @Override
+     protected void onResume() {
+         super.onResume();
+     }
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 7ca03b5f7109a0feced711a206ea4dcfb88b8798 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 10 Dec 2014 14:30:28 +0700
-Subject: [PATCH 1/3] Fix Quick Settings for MSim [2/2]
+Subject: [PATCH 3/5] Fix Quick Settings for MSim [2/2]
 
 - Use active data sim for setDataEnabled/getDataEnabled
 - Also update system setting  for setDataEnabled so that the correct
@@ -69,59 +223,10 @@ index 6c23a8e..3ec936b 100644
 1.9.3 (Apple Git-50)
 
 
-From 96784b3a2f9f07dce4cd5802a93d31446a66710e Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sun, 23 Nov 2014 15:48:23 +0700
-Subject: [PATCH 2/3] Telephony: GSM: remove 'Carrier Settings' regardless of
- csp_enabled
-
-Carrier Settings should be removed when config_carrier_settings_enable
-is false. csp_enabled has nothing to do with it.
-
-Fixes "Carrier Settings" appearing and crashing when the user clicks
-on it.
-
-Change-Id: I31c508f2353eb15a096aa279e71c4be4ce89abb8
----
- src/com/android/phone/GsmUmtsOptions.java | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
-
-diff --git a/src/com/android/phone/GsmUmtsOptions.java b/src/com/android/phone/GsmUmtsOptions.java
-index 463156d..25e2228 100755
---- a/src/com/android/phone/GsmUmtsOptions.java
-+++ b/src/com/android/phone/GsmUmtsOptions.java
-@@ -143,15 +143,14 @@ public class GsmUmtsOptions {
-                 log("[CSP] Disabling Operator Selection menu.");
-                 mPrefScreen.removePreference(mButtonOperatorSelectionExpand);
-             }
--
--            // Read platform settings for carrier settings
--            final boolean isCarrierSettingsEnabled = mPrefActivity.getResources().getBoolean(
--                    R.bool.config_carrier_settings_enable);
--            if (!isCarrierSettingsEnabled) {
--                Preference pref = mPrefScreen.findPreference(BUTTON_CARRIER_SETTINGS_KEY);
--                if (pref != null) {
--                    mPrefScreen.removePreference(pref);
--                }
-+        }
-+        // Read platform settings for carrier settings
-+        final boolean isCarrierSettingsEnabled = mPrefActivity.getResources().getBoolean(
-+                R.bool.config_carrier_settings_enable);
-+        if (!isCarrierSettingsEnabled) {
-+            Preference pref = mPrefScreen.findPreference(BUTTON_CARRIER_SETTINGS_KEY);
-+            if (pref != null) {
-+                mPrefScreen.removePreference(pref);
-             }
-         }
-         if (!mRemovedAPNExpand) {
--- 
-1.9.3 (Apple Git-50)
-
-
-From 9d1fd9572c1f07c9788249a36e7c517694f6de04 Mon Sep 17 00:00:00 2001
+From 550f3c9ec8a5fe0a98e0982a2c580f83615d999f Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 23 Nov 2014 15:57:20 +0700
-Subject: [PATCH 3/3] Telephony: MSim: enable preferred mode button for all
+Subject: [PATCH 4/5] Telephony: MSim: enable preferred mode button for all
  phones
 
 HACK to allow changing network mode on multi-SIM
@@ -134,7 +239,7 @@ Change-Id: I79cd6dfb1653c9c1ef14b8965c9af2bd0f5792cb
  3 files changed, 20 insertions(+), 21 deletions(-)
 
 diff --git a/res/values/strings.xml b/res/values/strings.xml
-index 40a0aca..27667c4 100644
+index 8fbc2eb..7719934 100644
 --- a/res/values/strings.xml
 +++ b/res/values/strings.xml
 @@ -551,6 +551,16 @@
@@ -214,6 +319,42 @@ index 3a5a23c..a657981 100644
              } else if (phoneType == PhoneConstants.PHONE_TYPE_GSM) {
                  mGsmUmtsOptions = new GsmUmtsOptions(this, prefSet, mPhone.getPhoneId());
              } else {
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 32eca75fd8632797e2ff4d2c11773f66e7f79256 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Tue, 23 Dec 2014 22:27:09 +0700
+Subject: [PATCH 5/5] Telephony: HACK: fix 'up' for MSimCallFeature sub option
+
+Change-Id: I1fcd9309d2849fbdd0ac1c903cbda4a8b1f213f5
+---
+ src/com/android/phone/CallFeaturesSetting.java | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/src/com/android/phone/CallFeaturesSetting.java b/src/com/android/phone/CallFeaturesSetting.java
+index 4cadc7a..492edba 100644
+--- a/src/com/android/phone/CallFeaturesSetting.java
++++ b/src/com/android/phone/CallFeaturesSetting.java
+@@ -2188,10 +2188,13 @@ public class CallFeaturesSetting extends PreferenceActivity
+      * This is useful for implementing "HomeAsUp" capability for second-level Settings.
+      */
+     public static void goUpToTopLevelSetting(Activity activity) {
+-        Intent intent = new Intent(activity, CallFeaturesSetting.class);
+-        intent.setAction(Intent.ACTION_MAIN);
+-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+-        activity.startActivity(intent);
++        // HACK: See MSimMobileNetworkSubSettings#onOptionsItemSelected
++        if (!PhoneUtils.isMultiSimEnabled()) {
++            Intent intent = new Intent(activity, CallFeaturesSetting.class);
++            intent.setAction(Intent.ACTION_MAIN);
++            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
++            activity.startActivity(intent);
++        }
+         activity.finish();
+     }
+ }
 -- 
 1.9.3 (Apple Git-50)
 
