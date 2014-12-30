@@ -1,7 +1,37 @@
-From e1f46ebcdede98da07a8f1aef89cb43669687842 Mon Sep 17 00:00:00 2001
+From 953ec0b9628a53648015a572d657d31e9d031e4f Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 28 Dec 2014 20:24:29 +0700
+Subject: [PATCH 1/4] UiccController: remove registerForAvailable
+
+CAF added this to be able to load SIM record when in airplane mode,
+but this breaks IMSI loading in some RILs (symptom: cannot view
+data usage stat in Quick Settings).
+
+Change-Id: I9f9124417db2fe983e716a2825fc08d87511f8aa
+---
+ src/java/com/android/internal/telephony/uicc/UiccController.java | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/java/com/android/internal/telephony/uicc/UiccController.java b/src/java/com/android/internal/telephony/uicc/UiccController.java
+index d86a517..646087c 100644
+--- a/src/java/com/android/internal/telephony/uicc/UiccController.java
++++ b/src/java/com/android/internal/telephony/uicc/UiccController.java
+@@ -142,7 +142,6 @@ public class UiccController extends Handler {
+             Integer index = new Integer(i);
+             mCis[i].registerForIccStatusChanged(this, EVENT_ICC_STATUS_CHANGED, index);
+             // TODO remove this once modem correctly notifies the unsols
+-            mCis[i].registerForAvailable(this, EVENT_ICC_STATUS_CHANGED, index);
+             mCis[i].registerForNotAvailable(this, EVENT_RADIO_UNAVAILABLE, index);
+             mCis[i].registerForOn(this, EVENT_ICC_STATUS_CHANGED, index);
+             if (mOEMHookSimRefresh) {
+-- 
+1.9.3 (Apple Git-50)
+
+
+From fcd79a2575afcb6d94c814edb8cb1ee8b2186cbc Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 23 Nov 2014 14:23:23 +0700
-Subject: [PATCH 1/3] SubscriptionController: do not return info for invalid
+Subject: [PATCH 2/4] SubscriptionController: do not return info for invalid
  slot id
 
 This causes Keyguard to crash when you switch a dual SIM phone into
@@ -14,10 +44,10 @@ Change-Id: I9d6102f94c11b808c272111230322507408b2d87
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/java/com/android/internal/telephony/SubscriptionController.java b/src/java/com/android/internal/telephony/SubscriptionController.java
-index 34e8d7c..4d74af3 100644
+index a7f808b..57a213e 100644
 --- a/src/java/com/android/internal/telephony/SubscriptionController.java
 +++ b/src/java/com/android/internal/telephony/SubscriptionController.java
-@@ -447,7 +447,7 @@ public class SubscriptionController extends ISub.Stub {
+@@ -451,7 +451,7 @@ public class SubscriptionController extends ISub.Stub {
              if (cursor != null) {
                  while (cursor.moveToNext()) {
                      SubInfoRecord subInfo = getSubInfoRecord(cursor);
@@ -30,10 +60,10 @@ index 34e8d7c..4d74af3 100644
 1.9.3 (Apple Git-50)
 
 
-From ffc18b24be693c3dd07d18e1ae4e5f462890b611 Mon Sep 17 00:00:00 2001
+From 82df09927498a1eb6bdc6c99f01341de68dfeb20 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 31 May 2014 12:34:56 +0700
-Subject: [PATCH 2/3] telephony: support for RIL that does not send
+Subject: [PATCH 3/4] telephony: support for RIL that does not send
  UNSOL_CALL_RING
 
 Samsung Broadcom RIL does not send UNSOL_CALL_RING at all, so it
@@ -46,10 +76,10 @@ Change-Id: Ib7373d32777f6c42ee488972a7aa63ae8e1cd09b
  1 file changed, 19 insertions(+)
 
 diff --git a/src/java/com/android/internal/telephony/PhoneBase.java b/src/java/com/android/internal/telephony/PhoneBase.java
-index a021997..67053bd 100644
+index f2c324d..ae0be68 100644
 --- a/src/java/com/android/internal/telephony/PhoneBase.java
 +++ b/src/java/com/android/internal/telephony/PhoneBase.java
-@@ -201,6 +201,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -205,6 +205,7 @@ public abstract class PhoneBase extends Handler implements Phone {
      boolean mDnsCheckDisabled;
      public DcTrackerBase mDcTracker;
      boolean mDoesRilSendMultipleCallRing;
@@ -57,7 +87,7 @@ index a021997..67053bd 100644
      int mCallRingContinueToken;
      int mCallRingDelay;
      public boolean mIsTheCurrentActivePhone = true;
-@@ -413,6 +414,11 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -421,6 +422,11 @@ public abstract class PhoneBase extends Handler implements Phone {
                  TelephonyProperties.PROPERTY_RIL_SENDS_MULTIPLE_CALL_RING, true);
          Rlog.d(LOG_TAG, "mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
  
@@ -69,7 +99,7 @@ index a021997..67053bd 100644
          mCallRingDelay = SystemProperties.getInt(
                  TelephonyProperties.PROPERTY_CALL_RING_DELAY, 3000);
          Rlog.d(LOG_TAG, "mCallRingDelay=" + mCallRingDelay);
-@@ -1725,6 +1731,18 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -1771,6 +1777,18 @@ public abstract class PhoneBase extends Handler implements Phone {
      public void notifyNewRingingConnectionP(Connection cn) {
          if (!mIsVoiceCapable)
              return;
@@ -88,7 +118,7 @@ index a021997..67053bd 100644
          AsyncResult ar = new AsyncResult(null, cn, null);
          mNewRingingConnectionRegistrants.notifyRegistrants(ar);
      }
-@@ -1968,6 +1986,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -2023,6 +2041,7 @@ public abstract class PhoneBase extends Handler implements Phone {
          pw.println(" mDnsCheckDisabled=" + mDnsCheckDisabled);
          pw.println(" mDcTracker=" + mDcTracker);
          pw.println(" mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
@@ -100,10 +130,10 @@ index a021997..67053bd 100644
 1.9.3 (Apple Git-50)
 
 
-From c58108806cd1f867e61562de11bb493f9f9f9039 Mon Sep 17 00:00:00 2001
+From 5c60adbac7641eaf3c2aa7f83af2f9acb47fc901 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 17:39:50 +0700
-Subject: [PATCH 3/3] telephony: RIL: i9082: set correct rild names
+Subject: [PATCH 4/4] telephony: RIL: i9082: set correct rild names
 
 Change-Id: Idf8e98ae2f36f30b84be04b7b062ca4b52cebd8a
 ---
@@ -111,7 +141,7 @@ Change-Id: Idf8e98ae2f36f30b84be04b7b062ca4b52cebd8a
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index f1eea36..ead4b7d 100644
+index 8775282..5e96097 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
 @@ -299,7 +299,7 @@ public class RIL extends BaseCommands implements CommandsInterface {

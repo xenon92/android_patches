@@ -1,4 +1,4 @@
-From 0894f45499dc918ad55e206bd496277c7cee7695 Mon Sep 17 00:00:00 2001
+From 6680bb784f51c2eb1fa1fd09d15f642b94ec1780 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
 Subject: [PATCH 1/5] binder: add compat symbol
@@ -29,7 +29,7 @@ index dd04dcf..9ec2380 100644
 1.9.3 (Apple Git-50)
 
 
-From c12f85259a3070253438254c643685d3739c59db Mon Sep 17 00:00:00 2001
+From 824966491a87c4e80393516e0bbb6d52ba00ba5d Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
 Subject: [PATCH 2/5] binder: add compat symbols
@@ -75,7 +75,7 @@ index 1dbb06f..8b36a54 100644
 1.9.3 (Apple Git-50)
 
 
-From 41ae595f081e6fecf3d6196f96c067af01d62c00 Mon Sep 17 00:00:00 2001
+From 639d03b6ba519a569011dfca722afac493ad6cbb Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
 Subject: [PATCH 3/5] sf: CAPRI_HWC: fix rotation artifact
@@ -85,7 +85,7 @@ Subject: [PATCH 3/5] sf: CAPRI_HWC: fix rotation artifact
  1 file changed, 5 insertions(+)
 
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index bbe5e90..97b03f7 100644
+index 708e205..0aabe54 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
 @@ -3640,6 +3640,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
@@ -104,7 +104,7 @@ index bbe5e90..97b03f7 100644
 1.9.3 (Apple Git-50)
 
 
-From 3f77ea38a089b9a87a5e2a33a37235d661c96774 Mon Sep 17 00:00:00 2001
+From 6c3180085aed8fd92282f3f59b4560d67192bff9 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 15 Dec 2014 23:12:44 +0700
 Subject: [PATCH 4/5] SurfaceComposerClient: don't block RGBA_8888 for
@@ -134,7 +134,7 @@ index 6ec4f23..40d0c81 100644
 1.9.3 (Apple Git-50)
 
 
-From 670d1b01945981a7ce4a83a666c5b6c4e6be7b4a Mon Sep 17 00:00:00 2001
+From 8feabf4d8153faa99049e76daae745a7f70da757 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:27 +0700
 Subject: [PATCH 5/5] sf: CAPRI_HWC: fix for screen recording
