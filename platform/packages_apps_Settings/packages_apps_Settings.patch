@@ -1,7 +1,7 @@
-From 5fafba04f69d5a3c47a86e7bf70bf98e26594364 Mon Sep 17 00:00:00 2001
+From fc8290f3547bf1d1301c442c3ebbb00bda96c43f Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 16 Nov 2014 08:55:55 +0700
-Subject: [PATCH] Settings: i9082: disable manual provisioning
+Subject: [PATCH 1/2] Settings: i9082: disable manual provisioning
 
 Does not work here
 
@@ -35,6 +35,36 @@ index 90957c8..3990c4c 100644
      }
  
      private void updateAllOptions() {
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 57fe1ab5501182bdaf83541d7f34770fd5167ce3 Mon Sep 17 00:00:00 2001
+From: Shareef Ali <shareefalis@cyanogenmod.org>
+Date: Sat, 3 Jan 2015 00:58:56 +0000
+Subject: [PATCH 2/2] Revert "Buttons: set HOME wake key default as disabled
+ [1/2]"
+
+This reverts commit c11c1ffa1c25da12bb7533e5c7b4f8edb0033781.
+
+Change-Id: I72193eb95ece31d947ab5ff08d949ae5cc47da53
+---
+ res/xml/button_settings.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/res/xml/button_settings.xml b/res/xml/button_settings.xml
+index ae56748..284cd93 100644
+--- a/res/xml/button_settings.xml
++++ b/res/xml/button_settings.xml
+@@ -60,7 +60,7 @@
+         <com.android.settings.cyanogenmod.SystemSettingSwitchPreference
+             android:key="home_wake_screen"
+             android:title="@string/button_wake_title"
+-            android:defaultValue="false" />
++            android:defaultValue="true" />
+ 
+         <SwitchPreference
+             android:key="home_answer_call"
 -- 
 1.9.3 (Apple Git-50)
 

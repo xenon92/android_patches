@@ -1,7 +1,7 @@
-From 05c47b576e364201876b9f627a191fe4f06c8125 Mon Sep 17 00:00:00 2001
+From 85290611331dbcef41c38e440e42cffa329dd005 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:50:29 +0700
-Subject: [PATCH 2/6] TelephonyManager: set properties in Broadcom-style as
+Subject: [PATCH 1/4] TelephonyManager: set properties in Broadcom-style as
  expected by RIL
 
 For i9082
@@ -12,7 +12,7 @@ Change-Id: I475fdd164b3316720387fefb14a3e12fbc262b39
  1 file changed, 20 insertions(+), 49 deletions(-)
 
 diff --git a/telephony/java/android/telephony/TelephonyManager.java b/telephony/java/android/telephony/TelephonyManager.java
-index abf8402..5ae8ab5 100644
+index b7b278f..62cfa05 100644
 --- a/telephony/java/android/telephony/TelephonyManager.java
 +++ b/telephony/java/android/telephony/TelephonyManager.java
 @@ -2729,44 +2729,16 @@ public class TelephonyManager {
@@ -117,10 +117,10 @@ index abf8402..5ae8ab5 100644
 1.9.3 (Apple Git-50)
 
 
-From 0d1259e261a8b6faa02c640398162ddff4bd26f3 Mon Sep 17 00:00:00 2001
+From b68f734bd97c839e6bc9a283bdf0165fac04fada Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 22:33:16 +0700
-Subject: [PATCH 3/6] Camera: HACK: i9082: API hacks
+Subject: [PATCH 2/4] Camera: HACK: i9082: API hacks
 
 CTS 5.0 requires the presence of an auto mode, so applications
 may try to use auto without checking.
@@ -177,10 +177,10 @@ index d461bca..a34a758 100644
 1.9.3 (Apple Git-50)
 
 
-From bfd55d86422288c04744e973023ecfd2ed113edf Mon Sep 17 00:00:00 2001
+From 3a49d50f4789caabde115d3d3965065615955489 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 21 Dec 2014 16:23:31 +0700
-Subject: [PATCH 4/6] PowerManagerService: only turn on button light when any
+Subject: [PATCH 3/4] PowerManagerService: only turn on button light when any
  button is pressed
 
 This more closely emulates stock Samsung behavior
@@ -191,7 +191,7 @@ Change-Id: I6b15c45b713bcbc290a1026805c46109060f9990
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/services/core/java/com/android/server/power/PowerManagerService.java b/services/core/java/com/android/server/power/PowerManagerService.java
-index 3cb2261..b320910 100644
+index 81430b0..297d64b 100644
 --- a/services/core/java/com/android/server/power/PowerManagerService.java
 +++ b/services/core/java/com/android/server/power/PowerManagerService.java
 @@ -240,6 +240,7 @@ public final class PowerManagerService extends SystemService
@@ -202,7 +202,7 @@ index 3cb2261..b320910 100644
  
      // Timestamp of last interactive power hint.
      private long mLastInteractivePowerHintTime;
-@@ -1128,6 +1129,11 @@ public final class PowerManagerService extends SystemService
+@@ -1134,6 +1135,11 @@ public final class PowerManagerService extends SystemService
                      return true;
                  }
              } else {
@@ -214,7 +214,7 @@ index 3cb2261..b320910 100644
                  if (eventTime > mLastUserActivityTime) {
                      mLastUserActivityTime = eventTime;
                      mDirty |= DIRTY_USER_ACTIVITY;
-@@ -1628,7 +1634,7 @@ public final class PowerManagerService extends SystemService
+@@ -1634,7 +1640,7 @@ public final class PowerManagerService extends SystemService
                          }
  
                          mKeyboardLight.setBrightness(mKeyboardVisible ? keyboardBrightness : 0);
@@ -225,3 +225,34 @@ index 3cb2261..b320910 100644
                              mButtonsLight.setBrightness(buttonBrightness);
 -- 
 1.9.3 (Apple Git-50)
+
+
+From 4d291797a2bfa4bc382d761cec6fe4d3513cf779 Mon Sep 17 00:00:00 2001
+From: Shareef Ali <shareefalis@cyanogenmod.org>
+Date: Sat, 3 Jan 2015 01:02:34 +0000
+Subject: [PATCH 4/4] Revert "Buttons: set HOME wake key defaults as disabled
+ [2/2]"
+
+This reverts commit 5a2643c6c206241e1d97a4fbfff08b3da05bc4a8.
+
+Change-Id: Ie11b1e8794ae362bac43c8aac3517aef57f5e92d
+---
+ policy/src/com/android/internal/policy/impl/PhoneWindowManager.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/policy/src/com/android/internal/policy/impl/PhoneWindowManager.java b/policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
+index 9a9b216..e71ecb3 100644
+--- a/policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
++++ b/policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
+@@ -1642,7 +1642,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
+                     Settings.Secure.RING_HOME_BUTTON_BEHAVIOR_DEFAULT,
+                     UserHandle.USER_CURRENT);
+             mHomeWakeScreen = (Settings.System.getIntForUser(resolver,
+-                    Settings.System.HOME_WAKE_SCREEN, 0, UserHandle.USER_CURRENT) == 1);
++                    Settings.System.HOME_WAKE_SCREEN, 1, UserHandle.USER_CURRENT) == 1);
+             mBackWakeScreen = (Settings.System.getIntForUser(resolver,
+                     Settings.System.BACK_WAKE_SCREEN, 0, UserHandle.USER_CURRENT) == 1);
+             mMenuWakeScreen = (Settings.System.getIntForUser(resolver,
+-- 
+1.9.3 (Apple Git-50)
+

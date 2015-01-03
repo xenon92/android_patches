@@ -1,0 +1,48 @@
+From e393ac1fe8e1e1c78f953a5d079a9dd68d31d0ad Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sat, 3 Jan 2015 12:44:43 +0700
+Subject: [PATCH] cm: sepolicy: fix performance settings
+
+Change-Id: Idea17856b4aef9258688a3ad58d0e5cac6d805a6
+---
+ prebuilt/common/etc/init.local.rc | 1 +
+ sepolicy/sepolicy.mk              | 1 +
+ sepolicy/system_app.te            | 2 ++
+ 3 files changed, 4 insertions(+)
+ create mode 100644 sepolicy/system_app.te
+
+diff --git a/prebuilt/common/etc/init.local.rc b/prebuilt/common/etc/init.local.rc
+index b8ee307..599afc2 100644
+--- a/prebuilt/common/etc/init.local.rc
++++ b/prebuilt/common/etc/init.local.rc
+@@ -91,6 +91,7 @@ on boot
+ 
+     chown system system /sys/block/mmcblk0/queue/scheduler
+     chmod 0664 /sys/block/mmcblk0/queue/scheduler
++    restorecon /sys/block/mmcblk0/queue/scheduler
+ 
+     chown system system /dev/cpuctl/apps/cpu.notify_on_migrate
+     chmod 0664 /dev/cpuctl/apps/cpu.notify_on_migrate
+diff --git a/sepolicy/sepolicy.mk b/sepolicy/sepolicy.mk
+index 1a9b343..d916a04 100644
+--- a/sepolicy/sepolicy.mk
++++ b/sepolicy/sepolicy.mk
+@@ -25,6 +25,7 @@ BOARD_SEPOLICY_UNION += \
+     su.te \
+     sysinit.te \
+     system.te \
++    system_app.te \
+     ueventd.te \
+     vold.te \
+     mac_permissions.xml
+diff --git a/sepolicy/system_app.te b/sepolicy/system_app.te
+new file mode 100644
+index 0000000..6ebd1ea
+--- /dev/null
++++ b/sepolicy/system_app.te
+@@ -0,0 +1,2 @@
++# For performance settings
++allow system_app sysfs_devices_system_cpu:file rw_file_perms;
+-- 
+1.9.3 (Apple Git-50)
+
