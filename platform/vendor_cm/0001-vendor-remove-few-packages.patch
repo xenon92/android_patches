@@ -1,25 +1,26 @@
-From 77f9b805017e6ad3ad3dd9f629b4f85b8c09cac6 Mon Sep 17 00:00:00 2001
+From 336729860e91037222af8cab857159872b351a17 Mon Sep 17 00:00:00 2001
 From: Shubhang Rathore <shubhang92@gmail.com>
-Date: Sat, 20 Dec 2014 07:03:40 -0500
+Date: Sun, 4 Jan 2015 00:43:15 -0500
 Subject: [PATCH] vendor: remove few packages
 
-Change-Id: Ic7f016cb3c6a3ccfbcfecae442b356db285b10d8
+Change-Id: I3d489254abec40c7c05c37166584a3c9138fe2b0
 ---
  config/common.mk      |  5 -----
  config/common_full.mk | 20 ++------------------
  2 files changed, 2 insertions(+), 23 deletions(-)
 
 diff --git a/config/common.mk b/config/common.mk
-index 2a87112..dfbdf17 100644
+index e77c93d..4a31d68 100644
 --- a/config/common.mk
 +++ b/config/common.mk
-@@ -132,20 +132,15 @@ PRODUCT_PACKAGES += \
+@@ -132,21 +132,16 @@ PRODUCT_PACKAGES += \
  
  # Optional CM packages
  PRODUCT_PACKAGES += \
 -    VoicePlus \
 -    Basic \
-     libemoji
+     libemoji \
+     Terminal
  
  # Custom CM packages
  PRODUCT_PACKAGES += \
